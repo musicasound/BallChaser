@@ -15,7 +15,7 @@ public class MainLoop {
 	{
 		DisplayManager.createDisplay();
 		
-		/*
+		/*林籍贸府 瘤况档凳
 		String_Input string_input1=new String_Input();
 		String_Input string_input2=new String_Input();
 		int state =0;

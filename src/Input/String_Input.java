@@ -9,11 +9,14 @@ public class String_Input {
 	private boolean isEnterKeyPressed=false;
 	
 	
+	
+	//게임루프의 한루프에서 키보드 이벤트온것을 체크하고 strBuf에 문자열저장
+	//엔터키를 받았다면 clean될때까지 update하지않는다.
 	public void update() {
 		while (Keyboard.next()) {
-			// KeyDown
+			
 			if (isEnterKeyPressed == false) {
-				
+				// KeyDown
 				if (Keyboard.getEventKeyState()) {
 					char c = Keyboard.getEventCharacter();
 					if (c == 13)// Enterkey
@@ -44,6 +47,7 @@ public class String_Input {
 		return isEnterKeyPressed;
 	}
 	
+	//현재 strbuf 리턴하고 clean 
 	public  String Pop() {
 		String str=getString();
 		cleanStrBuf();

@@ -1,5 +1,6 @@
 package Entities;
 
+import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 import DataTypes.MissileType;
@@ -7,13 +8,14 @@ import Displays.DisplayManager;
 import Physics.Transform;
 
 
-public class Missile {
+public class Missile implements Entity {
 	
 	//타입에 따른 처리는 인게임 시스템에서 한다.
 	MissileType type;
 	Transform transform;
 	Vector2f velocityDirection;
 	int targetPlayerIndex;
+	Rectangle _CollisionRange;
 	
 	public Missile(MissileType type, Vector2f position, Vector2f moveDirection, int targetPlayerIdx 
 			) {
@@ -22,6 +24,7 @@ public class Missile {
 		this.transform=new Transform(position, 0);
 		this.velocityDirection=moveDirection;
 		this.targetPlayerIndex=targetPlayerIdx;
+		this._CollisionRange=new Rectangle(0,0, 25,25);
 	}
 	
 	public void update()
@@ -57,6 +60,14 @@ public class Missile {
 
 	public void setTargetPlayerIndex(int targetPlayerIndex) {
 		this.targetPlayerIndex = targetPlayerIndex;
+	}
+
+	@Override
+	public Rectangle getCollider() {
+		// TODO Auto-generated method stub
+		Vector2f pos=transform.getPosition();
+		
+		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
 	}
 	
 	

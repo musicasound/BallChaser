@@ -1,5 +1,6 @@
 package DataTypes;
 
+import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 public class CharacterType extends DataType {
@@ -8,7 +9,7 @@ public class CharacterType extends DataType {
 	public float _PushCoolTime;
 	//Skill _Skill;
 	
-	public CharacterType(float _MaxVelocity, float _Acceleration, Vector2f _ImageScale, Vector2f _CollisionRange,
+	public CharacterType(float _MaxVelocity, float _Acceleration, Vector2f _ImageScale, Rectangle _CollisionRange,
 			float _PushRadius, float _PushCoolTime) {
 		super(_MaxVelocity, _Acceleration, _ImageScale, _CollisionRange);
 		this._PushRadius = _PushRadius;

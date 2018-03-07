@@ -1,0 +1,20 @@
+﻿public class Entity{
+		EntityTexture getTexture();
+		Vector2f getPosition();
+		float getRotateZ();
+		float getScale();
+		//or getTransformationMatrix
+	}
+
+**************
+Renderer2D.java 에서 렌더링시에
+2d엔티티에 대해서
+transformation Matrix와
+Texture가 필요로함
+****************
+
+
+렌더링할때 똑같은 텍스처를쓰면 한번에 처리할것이기 때문에
+HashMap(EntityTexture,List<Entity>)로 관리되고 렌더링시
+render(List<Entity> entities)식으로 렌더링됨
+

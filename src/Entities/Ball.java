@@ -55,6 +55,8 @@ public class Ball implements Entity{
 		
 	}
 	
+	
+	//벽면 반사처리는 CollisionManager에서 Reflect 함수를 호출하여 처리한다.
 	public void Reflect(Vector2f normal)
 	{
 		Vector2f vel_dir_neg=new Vector2f();

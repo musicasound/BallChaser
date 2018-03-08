@@ -15,4 +15,14 @@ public class Maths {
 		Matrix4f.scale(new Vector3f(scale,scale,scale), matrix, matrix);
 		return matrix;
 	}
+	
+	//¼ø¼­ (T * R * S) ... * position
+		public static Matrix4f createTransformation2DMatrix(Vector2f translation,float rz,Vector2f scale2D){
+			Matrix4f matrix=new Matrix4f();
+			matrix.setIdentity();
+			Matrix4f.translate(translation, matrix, matrix);
+			Matrix4f.rotate((float)Math.toRadians(rz),new Vector3f(0,0,1),matrix,matrix);
+			Matrix4f.scale(new Vector3f(scale2D.x,scale2D.y,0), matrix, matrix);
+			return matrix;
+		}
 }

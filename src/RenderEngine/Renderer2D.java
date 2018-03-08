@@ -46,6 +46,8 @@ public class Renderer2D {
 			for(Entity entity:batch) {
 				
 				Matrix4f matrix=Physics.Maths.createTransformation2DMatrix(entity.getTransform().getPosition(),entity.getTransform().getRotationAngle(),entity.getScale());
+				System.out.println(matrix);
+				
 				shader.loadTransformation(matrix);
 				GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
 			}
@@ -60,7 +62,7 @@ public class Renderer2D {
 		shader.stop();
 	}
 	
-	public void prepareTexturedModel(EntityTexture texture) {
+	private void prepareTexturedModel(EntityTexture texture) {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D,texture.getID());
 	}
 

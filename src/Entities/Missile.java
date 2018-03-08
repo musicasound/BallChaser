@@ -6,6 +6,7 @@ import org.lwjgl.util.vector.Vector2f;
 import DataTypes.MissileType;
 import Displays.DisplayManager;
 import Physics.Transform;
+import Textures.EntityTexture;
 
 
 public class Missile implements Entity {
@@ -68,6 +69,20 @@ public class Missile implements Entity {
 		Vector2f pos=transform.getPosition();
 		
 		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
+	}
+
+	
+
+	@Override
+	public Vector2f getScale() {
+		// TODO Auto-generated method stub
+		return type._ImageScale;
+	}
+
+	@Override
+	public EntityTexture getEntityTexture() {
+		// TODO Auto-generated method stub
+		return type._ImageTexture;
 	}
 	
 	

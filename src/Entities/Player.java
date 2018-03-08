@@ -9,6 +9,7 @@ import DataTypes.CharacterType;
 import DataTypes.MissileType;
 import Displays.DisplayManager;
 import Physics.Transform;
+import Textures.EntityTexture;
 
 public class Player implements Entity {
 	enum RotationDirection{CCW,CW};
@@ -159,6 +160,18 @@ public class Player implements Entity {
 		
 		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
 		
+	}
+
+	@Override
+	public Vector2f getScale() {
+		// TODO Auto-generated method stub
+		return type._ImageScale;
+	}
+
+	@Override
+	public EntityTexture getEntityTexture() {
+		// TODO Auto-generated method stub
+		return type._ImageTexture;
 	}
 	
 	

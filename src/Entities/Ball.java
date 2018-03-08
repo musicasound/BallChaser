@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import Displays.DisplayManager;
 import Physics.Transform;
+import Textures.EntityTexture;
 
 public class Ball implements Entity{
 	Transform transform;
@@ -122,5 +123,21 @@ public class Ball implements Entity{
 		Vector2f pos=transform.getPosition();
 		
 		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
+	}
+
+	
+	//ballType« ø‰
+
+	@Override
+	public Vector2f getScale() {
+		// TODO Auto-generated method stub
+		return null
+				;
+	}
+
+	@Override
+	public EntityTexture getEntityTexture() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

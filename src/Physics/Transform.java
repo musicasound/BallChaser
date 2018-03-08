@@ -6,7 +6,7 @@ public class Transform {
 
 	Vector2f position;
 	float rotationAngle;
-	
+	Vector2f scale;
 	
 	
 	public Transform(Vector2f position, float rotationAngle) {

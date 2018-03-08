@@ -1,6 +1,9 @@
 package RenderEngine;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -9,17 +12,14 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 
+import Entities.Entity;
 import Shaders.Shader2D;
+import Textures.EntityTexture;
 
 public class Renderer2D {
 	//same quad 모델
 	
-	public interface myRequest{
-		int getTexture();
-		Vector2f getPosition();
-		float getRotateZ();
-		float getScale();
-	}
+	private Map<EntityTexture, List<Entity>> entities = new HashMap<EntityTexture, List<Entity>>();
 	
 	private final VaoObject quad ;//2d는 항상 같은 로컬 좌표 (-1,-1)~(1,1)정사각형
 	private Shader2D shader;
@@ -30,7 +30,7 @@ public class Renderer2D {
 		shader = new Shader2D();
 	}
 	
-	public void render(List<myRequest> entities) {
+	public void render() {
 		shader.start();
 		
 		GL30.glBindVertexArray(quad.getVaoID());
@@ -39,14 +39,19 @@ public class Renderer2D {
 		GL11.glEnable(GL11.GL_BLEND);//까만배경없애기
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA,GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);//뒤에막히는거없애기
-		
-		for(myRequest entity:entities) {
+		for(EntityTexture textureModel:(entities.keySet())) {
+			prepareTexturedModel(textureModel);
 			
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D,entity.getTexture());
-			Matrix4f matrix=Physics.Maths.createTransformation2DMatrix(entity.getPosition(), entity.getScale(),entity.getRotateZ());
-			shader.loadTransformation(matrix);
-			GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
+			List<Entity> batch =entities.get(textureModel);
+			for(Entity entity:batch) {
+				
+				Matrix4f matrix=Physics.Maths.createTransformation2DMatrix(entity.getTransform().getPosition(),entity.getTransform().getRotationAngle(),entity.getScale());
+				shader.loadTransformation(matrix);
+				GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount());
+			}
 		}
+		
+		
 		GL11.glEnable(GL11.GL_DEPTH_TEST);//뒤에막히는거없애기
 		GL11.glDisable(GL11.GL_BLEND);
 		GL20.glDisableVertexAttribArray(0);
@@ -54,6 +59,23 @@ public class Renderer2D {
 		
 		shader.stop();
 	}
+	
+	public void prepareTexturedModel(EntityTexture texture) {
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D,texture.getID());
+	}
+
+	public void processEntity(Entity entity) {
+		EntityTexture entityModel = entity.getEntityTexture();
+		List<Entity> batch = entities.get(entityModel);
+		if (batch != null) {
+			batch.add(entity);
+		} else {
+			List<Entity> newBatch = new ArrayList<Entity>();
+			newBatch.add(entity);
+			entities.put(entityModel, newBatch);
+		}
+	}
+	
 	public void cleanUp() {
 		shader.cleanUp();
 	}

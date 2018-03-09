@@ -10,6 +10,10 @@ import Physics.Transform;
 import Picking.MousePicking;
 import Textures.EntityTexture;
 
+enum GuiButtonState {
+	MOUSEBUTTONDOWN, NONEVENT,MOUSEBUTTONUP,MOUSEON
+}
+
 public class GuiButton extends Entity{
 	private EntityTexture tex_mouseButtonDown;
 	private EntityTexture tex_mouseOn;
@@ -17,7 +21,8 @@ public class GuiButton extends Entity{
 	private EntityTexture tex_nonEvent;
 	private EntityTexture current_texture;
 	private Rectangle _CollisionRange;
-	
+
+	private GuiButtonState state=GuiButtonState.NONEVENT;
 	
 	
 	public GuiButton(Transform transform, EntityTexture tex_mouseButtonDown, EntityTexture tex_mouseOn,
@@ -52,32 +57,36 @@ public class GuiButton extends Entity{
 	}
 	
 	private void init() {
-		current_texture=tex_nonEvent;
+		nonEvent();
 	}
 	
 	public void updatePickingEvent() {
 		
 		if(Mouse.isButtonDown(0)) {
-			current_texture=tex_mouseButtonDown;
+			mouseButtonDown();
 		}
 		else {
-			current_texture=tex_mouseOn;
+			mouseOn();
 		}
 	}
 	
 	public void mouseOn() {
+		state=GuiButtonState.MOUSEON;
 		current_texture=tex_mouseOn;
 	}
 	
 	public void mouseButtonUp() {
+		state=GuiButtonState.MOUSEBUTTONUP;
 		current_texture=tex_mouseButtonUp;
 	}
 	
 	public void mouseButtonDown() {
+		state=GuiButtonState.MOUSEBUTTONDOWN;
 		current_texture=tex_mouseButtonDown;
 	}
 	
 	public void nonEvent() {
+		state=GuiButtonState.NONEVENT;
 		current_texture=tex_nonEvent;
 	}
 	

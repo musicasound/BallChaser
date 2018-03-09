@@ -1,6 +1,7 @@
 package IngameSystem;
 
 import org.lwjgl.util.Rectangle;
+import org.lwjgl.util.vector.Vector2f;
 
 import Entities.Entity;
 
@@ -18,6 +19,7 @@ public class CollisionManager {
 	  { 
 	    return entity1.intersects(entity2);
 	  }
+	
 	
 //프로세싱으로 테스트 완료.
 //바깥쪽 사이드, 안쪽 사이드에서 공의 반사를 체크함.

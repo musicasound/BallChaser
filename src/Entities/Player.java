@@ -11,7 +11,7 @@ import Displays.DisplayManager;
 import Physics.Transform;
 import Textures.EntityTexture;
 
-public class Player implements Entity {
+public class Player extends Entity {
 	enum RotationDirection{CCW,CW};
 	enum CharacterStatus{DEAD, LIVE, STUN, BALL_CATCHED};
 	Transform transform;
@@ -31,11 +31,11 @@ public class Player implements Entity {
 	
 	Rectangle _CollisionRange;
 	
-	public Player(CharacterType type, int playerIndex) {
-		super();
+	public Player(CharacterType type, int playerIndex,Vector2f position) {
+		super(new Transform(position, 0.0f,type._ImageScale));
 		this.playerIndex = playerIndex;
 		this.type=type;
-		this._CollisionRange=new Rectangle(0, 0, 50, 50);
+		this._CollisionRange=new Rectangle(0, 0, 50, 50);//캐릭터에 CollisionRange있음 type.collision...으로변경해야할것같음 -예찬
 		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(0,1);
 	}
@@ -160,12 +160,6 @@ public class Player implements Entity {
 		
 		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
 		
-	}
-
-	@Override
-	public Vector2f getScale() {
-		// TODO Auto-generated method stub
-		return type._ImageScale;
 	}
 
 	@Override

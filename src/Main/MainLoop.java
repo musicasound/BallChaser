@@ -1,5 +1,7 @@
 package Main;
 
+
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -8,8 +10,10 @@ import com.sun.corba.se.spi.orbutil.fsm.Input;
 
 import Displays.DisplayManager;
 import Entities.YechanTestEntity;
+import Guis.GuiButton;
 import Input.String_Input;
 import Physics.Transform;
+import Picking.MousePicking;
 import RenderEngine.Loader;
 import RenderEngine.Renderer2D;
 import Textures.EntityTexture;
@@ -23,10 +27,22 @@ public class MainLoop {
 		
 		Loader loader =new Loader();
 		EntityTexture texture = new EntityTexture(loader.loadTexture("box"));
-		YechanTestEntity entity = new YechanTestEntity(texture,new Transform(new Vector2f(150,150),30),new Vector2f(20f,20f));
+		YechanTestEntity entity = new YechanTestEntity(texture,new Transform(new Vector2f(150,150),30,new Vector2f(10,10)));
 		
 		Renderer2D renderer2d = new Renderer2D(loader);
-		renderer2d.processEntity(entity);
+		renderer2d.processInstancingEntity(entity);
+		
+		MousePicking mousePicking = new MousePicking();
+		Renderer2D rendererGuis = new Renderer2D(loader);
+		Transform Button1Trnsf= new Transform(new Vector2f(0,0),0,new Vector2f(100,100));
+		EntityTexture textures[] = new EntityTexture[10];
+		textures[0]=new EntityTexture(loader.loadTexture("mud"));
+		textures[1]=new EntityTexture(loader.loadTexture("path"));
+		textures[2]=new EntityTexture(loader.loadTexture("grass"));
+		
+		GuiButton guiButton1=new GuiButton(Button1Trnsf,textures[0],textures[1],null,textures[2]);
+		
+		rendererGuis.processNonInstancingEntity(guiButton1);
 		/*林籍贸府 瘤况档凳
 		String_Input string_input1=new String_Input();
 		String_Input string_input2=new String_Input();
@@ -37,9 +53,11 @@ public class MainLoop {
 		while(!Display.isCloseRequested())
 		{
 			
+			mousePicking.update();
+			guiButton1.update(mousePicking);
 			while(DisplayManager.isUpdate())
 			{
-				
+				System.out.println(mousePicking.getCurrentMousePos());
 				/* Input test
 				if(state==0) {
 					string_input1.update();
@@ -62,6 +80,7 @@ public class MainLoop {
 				
 			}
 			renderer2d.render();
+			rendererGuis.render();
 			//Render
 			
 			

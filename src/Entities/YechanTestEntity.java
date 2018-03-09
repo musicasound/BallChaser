@@ -7,16 +7,14 @@ import Physics.Transform;
 import RenderEngine.Loader;
 import Textures.EntityTexture;
 
-public class YechanTestEntity implements Entity{
+public class YechanTestEntity extends Entity{
 
 	private EntityTexture textureModel;
-	private Transform transform;//scale내용이없음..
-	private Vector2f scale2D;
 	
-	public YechanTestEntity(EntityTexture textureModel,Transform transform,Vector2f scale){
+	public YechanTestEntity(EntityTexture textureModel,Transform transform){
+		super(transform);
 		this.textureModel = textureModel;
-		this.transform=transform;
-		this.scale2D=scale;
+	
 	}
 	
 	@Override
@@ -38,10 +36,6 @@ public class YechanTestEntity implements Entity{
 		return transform;
 	}
 
-	@Override
-	public Vector2f getScale() {
-		// TODO Auto-generated method stub
-		return scale2D;
-	}
+	
 
 }

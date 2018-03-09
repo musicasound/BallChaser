@@ -10,11 +10,11 @@ void main(void){
 
 	vec4 worldPosition = transformationMatrix * vec4(position, 0.0, 1.0); //-300~300 coordinate system
 	gl_Position = vec4(worldPosition.xy/300.0,0,1); //-300~300 coordinate system
-	textureCoords = vec2((position.x+1.0)/2.0, 1 - (position.y+1.0)/2.0);
+	textureCoords = vec2((position.x+0.5), 1 - (position.y+0.5));
 	//2d object's
-	//positions are -1,1			1,1
+	//positions are -0.5,0.5			0.5,0.5
 	//					   square	
 	//					   
 	//					   
-	//				-1,-1			1,-1
+	//				-0.5,-0.5			0.5,-0.5
 }

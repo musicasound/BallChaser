@@ -9,7 +9,7 @@ import Physics.Transform;
 import Textures.EntityTexture;
 
 
-public class Missile implements Entity {
+public class Missile extends Entity {
 	
 	//타입에 따른 처리는 인게임 시스템에서 한다.
 	MissileType type;
@@ -20,9 +20,8 @@ public class Missile implements Entity {
 	
 	public Missile(MissileType type, Vector2f position, Vector2f moveDirection, int targetPlayerIdx 
 			) {
-		
+		super(new Transform(position, 0.0f,type._ImageScale));
 		this.type=type;
-		this.transform=new Transform(position, 0);
 		this.velocityDirection=moveDirection;
 		this.targetPlayerIndex=targetPlayerIdx;
 		this._CollisionRange=new Rectangle(0,0, 25,25);
@@ -43,9 +42,7 @@ public class Missile implements Entity {
 		this.type = type;
 	}
 
-	public Transform getTransform() {
-		return transform;
-	}
+	
 
 	public Vector2f getVelocityDirection() {
 		return velocityDirection;
@@ -63,26 +60,23 @@ public class Missile implements Entity {
 		this.targetPlayerIndex = targetPlayerIndex;
 	}
 
-	@Override
-	public Rectangle getCollider() {
-		// TODO Auto-generated method stub
-		Vector2f pos=transform.getPosition();
-		
-		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
-	}
-
 	
 
-	@Override
-	public Vector2f getScale() {
-		// TODO Auto-generated method stub
-		return type._ImageScale;
-	}
 
 	@Override
 	public EntityTexture getEntityTexture() {
 		// TODO Auto-generated method stub
 		return type._ImageTexture;
+	}
+
+
+	//벽면충돌 사망 처리 및 미사일 충돌처리 등에 필요
+	public Rectangle getCollider()
+	{
+		Vector2f pos=transform.getPosition();
+		
+		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
+		
 	}
 	
 	

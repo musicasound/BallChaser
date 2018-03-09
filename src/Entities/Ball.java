@@ -7,8 +7,7 @@ import Displays.DisplayManager;
 import Physics.Transform;
 import Textures.EntityTexture;
 
-public class Ball implements Entity{
-	Transform transform;
+public class Ball extends Entity{
 	
 	float velocityScale;
 	Vector2f velocityDirection;
@@ -18,11 +17,10 @@ public class Ball implements Entity{
 	boolean isCatched=false;
 	int catchingPlayerIdx=-1;
 	
-	public Rectangle _CollisionRange;
 	
 	public Ball(Vector2f position)
 	{
-		this.transform=new Transform(position, 0.0f);
+		super(new Transform(position, 0.0f,new Vector2f(1,1)));//scale 1*1
 		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(0.0f, 0.0f);
 		this._Acceleration=6.0f;
@@ -119,25 +117,22 @@ public class Ball implements Entity{
 		this.catchingPlayerIdx = catchingPlayerIdx;
 	}
 
-	public Rectangle getCollider() {
-		Vector2f pos=transform.getPosition();
-		
-		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
-	}
-
-	
-	//ballType필요
-
-	@Override
-	public Vector2f getScale() {
-		// TODO Auto-generated method stub
-		return null
-				;
-	}
-
+	/*@@@@@@@@@@@@@@@	수정필요	@@@@@@@@@@@@@@@@@@*/
 	@Override
 	public EntityTexture getEntityTexture() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public Rectangle getCollider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
+
+
+
 }

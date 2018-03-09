@@ -9,10 +9,12 @@ public class Transform {
 	Vector2f scale;
 	
 	
-	public Transform(Vector2f position, float rotationAngle) {
+	
+	public Transform(Vector2f position, float rotationAngle,Vector2f scale) {
 		super();
 		this.position = position;
 		this.rotationAngle = rotationAngle;
+		this.scale = scale;
 	}
 	
 	
@@ -39,5 +41,7 @@ public class Transform {
 	{
 		rotationAngle+=angle;
 	}
-	
+	public Vector2f getScale() {
+		return scale;
+	}
 }

@@ -4,6 +4,7 @@ package Main;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 
 import com.sun.corba.se.spi.orbutil.fsm.Input;
@@ -79,6 +80,7 @@ public class MainLoop {
 				*/
 				
 			}
+			prepareRendering();
 			renderer2d.render();
 			rendererGuis.render();
 			//Render
@@ -87,5 +89,12 @@ public class MainLoop {
 			//update delta time and display
 			DisplayManager.updateDisplay();
 		}
+	}
+	
+	
+	static void prepareRendering()
+	{
+		GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT | GL11.GL_COLOR_BUFFER_BIT);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 }

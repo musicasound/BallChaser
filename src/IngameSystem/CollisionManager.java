@@ -1,9 +1,13 @@
 package IngameSystem;
 
+import java.util.ArrayList;
+
 import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 import Entities.Entity;
+import Entities.Missile;
+import Entities.Player;
 
 public class CollisionManager {
 
@@ -19,6 +23,11 @@ public class CollisionManager {
 	  { 
 	    return entity1.intersects(entity2);
 	  }
+	
+	public static void ProcessCollision(Player player, ArrayList<Missile> missile)
+	{
+		
+	}
 	
 	
 //프로세싱으로 테스트 완료.

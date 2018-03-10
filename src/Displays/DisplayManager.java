@@ -17,7 +17,7 @@ public class DisplayManager {
 
 	private static long lastFrameTime;
 	private static float delta;
-	
+	private static float totalTime;
 	/*
 	 * 
 	 * 0.02초 fixed update가  몇 번이나 적용되어야 하는지를 나타낸다.
@@ -50,6 +50,7 @@ public class DisplayManager {
 		
 		GL11.glViewport(0,0,WIDTH, HEIGHT);
 		lastFrameTime=getCurrentTime();
+		totalTime=0;
 	}
 	
 	
@@ -63,6 +64,7 @@ public class DisplayManager {
 		lastFrameTime=currentFrameTime;
 		
 		updateTimeSum+=delta;
+		totalTime+=delta;
 		
 		while(updateTimeSum>=0.02f)
 		{
@@ -108,5 +110,10 @@ public class DisplayManager {
 	private static long getCurrentTime()
 	{
 		return Sys.getTime()*1000/Sys.getTimerResolution();
+	}
+	
+	public static float getTotalTime()
+	{
+		return totalTime;
 	}
 }

@@ -1,0 +1,50 @@
+#version 330
+
+in vec2 pass_textureCoords;
+
+out vec4 out_colour;
+
+uniform vec3 colour;
+uniform sampler2D fontAtlas;
+
+
+//Distance Field
+
+//texture's alpha value means just distance from center not transparency 
+//we are not using alpha value directly for coloring!! just caculate distance
+//and we using just distance value for coloring
+//center alpha value is 1 , the value decreases from the center
+//let 1-alpha be the distance
+
+const float width = 0.5;
+const float edge = 0.1;
+
+//distance < width : set alpha(transparent) factor 1
+//width < distance < width+edge : set alpha(transparent) factor smoothing 
+//width+edge < set color alpha factor 0
+//smoothstep(edge0,edge1,x) :
+
+
+const float borderWidth = 0.4;
+const float borderEdge = 0.5;
+
+const vec3 outlineColour=vec3(1.0,0.0,0.0);
+
+//translate.. for effect shadow
+const vec2 offset = vec2(0.006,0.006);
+
+
+//tip : hi
+void main(void){
+	
+	float distance =1.0 - texture(fontAtlas,pass_textureCoords).a;
+	float alpha = 1.0 - smoothstep(width,width+edge,distance);
+
+	float distance2 =1.0 - texture(fontAtlas,pass_textureCoords + offset).a;
+	float outlineAlpha = 1.0 - smoothstep(borderWidth,borderWidth+borderEdge,distance2);
+
+	float overallAlpha = alpha + (1.0 - alpha) *outlineAlpha;
+	vec3 overallColour =mix(outlineColour,colour,alpha/overallAlpha);
+
+	out_colour = vec4(overallColour,overallAlpha);
+}

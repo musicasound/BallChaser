@@ -2,6 +2,8 @@ package Main;
 
 
 
+import java.io.File;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -18,6 +20,9 @@ import Picking.MousePicking;
 import RenderEngine.Loader;
 import RenderEngine.Renderer2D;
 import Textures.EntityTexture;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
+import fontRendering.TextMaster;
 
 
 
@@ -44,6 +49,12 @@ public class MainLoop {
 		GuiButton guiButton1=new GuiButton(Button1Trnsf,textures[0],textures[1],null,textures[2]);
 		
 		rendererGuis.processNonInstancingEntity(guiButton1);
+		
+		TextMaster.init(loader);
+		FontType font = new FontType(loader.loadFontTextureAtlas("candara"),new File("res/candara.fnt"));
+		GUIText text = new GUIText("A sample string of text",5,font,new Vector2f(0.0f,0.4f),1f,true);
+		text.setColour(1, 1, 0);
+		
 		/*주석처리 지워도됨
 		String_Input string_input1=new String_Input();
 		String_Input string_input2=new String_Input();
@@ -81,9 +92,13 @@ public class MainLoop {
 				
 			}
 			prepareRendering();
+			
+		
 			renderer2d.render();
 			rendererGuis.render();
 			//Render
+			
+			TextMaster.render();//문제 그냥넣어버림 넣고빼기불가,vao,vbo,삭제불가
 			
 			
 			//update delta time and display

@@ -86,6 +86,8 @@ public class Loader {
 		
 	}
 	
+	
+	
 	//메모리로드후 idx반환
 	public int loadFontTextureAtlas(String fileName) {
 		Texture texture = null;

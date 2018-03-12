@@ -42,7 +42,7 @@ public class GuiButton extends Entity{
 	}
 
 	public void update(MousePicking mousePicking) {
-		init();
+		
 		updatePicking(mousePicking);
 	}
 	
@@ -50,23 +50,20 @@ public class GuiButton extends Entity{
 		Vector2f worldMousePos = mousePicking.getCurrentMousePos();
 		System.out.println(_CollisionRange);
 		if(_CollisionRange.contains((int)worldMousePos.x,(int)worldMousePos.y)) {
-			System.out.println("wyo");
 			updatePickingEvent();
 		}
 		
 	}
 	
-	private void init() {
-		nonEvent();
-	}
 	
 	public void updatePickingEvent() {
-		
-		if(Mouse.isButtonDown(0)) {
-			mouseButtonDown();
-		}
-		else {
-			mouseOn();
+		while(Mouse.next()) {
+		    if (Mouse.getEventButton() > -1) {
+		        if (Mouse.getEventButtonState()) {
+		            System.out.println("PRESSED MOUSE BUTTON: " + Mouse.getEventButton());
+		        }
+		        else System.out.println("RELEASED MOUSE BUTTON: " + Mouse.getEventButton());
+		    }
 		}
 	}
 	

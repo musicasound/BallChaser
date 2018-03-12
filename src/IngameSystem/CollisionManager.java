@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
+import Entities.Ball;
 import Entities.Entity;
 import Entities.Missile;
 import Entities.Player;
@@ -24,7 +25,8 @@ public class CollisionManager {
 	    return entity1.intersects(entity2);
 	  }
 	
-	public static void ProcessCollision(Player player, ArrayList<Missile> missile)
+	//플레이어와 미사일과 볼의 충돌 상태를 점검 및 업데이트한다.
+	public static void ProcessCollision(Player player, ArrayList<Missile> missiles, Ball ball)
 	{
 		
 	}
@@ -33,7 +35,7 @@ public class CollisionManager {
 //프로세싱으로 테스트 완료.
 //바깥쪽 사이드, 안쪽 사이드에서 공의 반사를 체크함.
 	
-//	void checkReflection()
+//	void checkReflection(Ball ball)
 //	{
 //	  PVector pos=ball.getTransform().getPosition();
 //	  float radius=12.5f;

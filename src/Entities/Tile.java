@@ -28,4 +28,7 @@ public class Tile extends Entity{
 		// TODO Auto-generated method stub
 		return tileTexture;
 	}
+	
+	public void update()
+	{}
 }

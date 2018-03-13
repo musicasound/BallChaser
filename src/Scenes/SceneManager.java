@@ -5,7 +5,7 @@ public class SceneManager {
 	
 	public static void init()
 	{
-		currentScene=new LoginScene();
+		currentScene=new IngameScene();
 	}
 	
 	public static void loadScene(Scene scene)

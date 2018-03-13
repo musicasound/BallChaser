@@ -13,6 +13,11 @@ public abstract class Entity
 	public Entity(Transform transform) {
 		this.transform=transform;
 	}
+	
+	public Entity(Vector2f position, Vector2f scale)
+	{
+		this.transform=new Transform(position, 0.0f, scale);
+	}
 	//DataType에 Collider가있어서...
 	public abstract Rectangle getCollider();
 	//DataType에 EntityTexture 가있어서 구조를 바꾸기엔 다시해야하고.. 일단 이런식으로..

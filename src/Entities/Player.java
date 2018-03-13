@@ -14,7 +14,6 @@ import Textures.EntityTexture;
 public class Player extends Entity {
 	enum RotationDirection{CCW,CW};
 	enum CharacterStatus{DEAD, LIVE, STUN, BALL_CATCHED};
-	Transform transform;
 	float velocityScale;
 	Vector2f velocityDirection;
 	CharacterStatus status;
@@ -32,7 +31,7 @@ public class Player extends Entity {
 	Rectangle _CollisionRange;
 	
 	public Player(CharacterType type, int playerIndex,Vector2f position) {
-		super(new Transform(position, 0.0f,type._ImageScale));
+		super(position, type._ImageScale);
 		this.playerIndex = playerIndex;
 		this.type=type;
 		this._CollisionRange=new Rectangle(0, 0, 50, 50);//캐릭터에 CollisionRange있음 type.collision...으로변경해야할것같음 -예찬

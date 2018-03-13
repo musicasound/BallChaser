@@ -3,6 +3,7 @@ package Entities;
 import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
+import Main.GlobalDataManager;
 import Physics.Transform;
 import Textures.EntityTexture;
 
@@ -13,8 +14,9 @@ public class Tile extends Entity{
 	
 
 	public Tile(Vector2f position) {
-		super(new Transform(position, 0.0f,new Vector2f(1.0f,1.0f)));
-		this._CollisionRange = new Rectangle(0,0, 70, 70);
+		super(new Transform(position, 0.0f,new Vector2f(60.0f,60.0f)));
+		this._CollisionRange = new Rectangle(0,0, 60, 60);
+		tileTexture=GlobalDataManager.tileTexture;
 	}
 
 	@Override

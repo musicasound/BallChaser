@@ -12,7 +12,9 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 
+import Entities.CharacterStatus;
 import Entities.Entity;
+import Entities.Player;
 import Physics.Transform;
 import Shaders.Shader2D;
 import Textures.EntityTexture;
@@ -61,6 +63,13 @@ public class Renderer2D {
 			List<Entity> batch =instancingEntities.get(textureModel);
 			for(Entity entity:batch) {
 				
+				if(entity instanceof Player)
+				{
+					if(((Player) entity).getStatus()==CharacterStatus.DEAD)
+					{
+						continue;
+					}
+				}
 				Transform tranform= entity.getTransform();
 				Matrix4f matrix=Physics.Maths.createTransformation2DMatrix(tranform.getPosition(),tranform.getRotationAngle(),tranform.getScale());
 		
@@ -74,6 +83,8 @@ public class Renderer2D {
 		GL11.glDisable(GL11.GL_BLEND);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
+		
+		instancingEntities.clear();
 		
 	}
 	
@@ -107,6 +118,8 @@ public class Renderer2D {
 		GL30.glBindVertexArray(0);
 		
 		shader.stop();
+		
+		nonInstancingEntities.clear();
 	}
 	
 	

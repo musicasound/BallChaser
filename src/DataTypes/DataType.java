@@ -8,7 +8,7 @@ import Textures.EntityTexture;
 public abstract class DataType {
 	public float _MaxVelocity;
 	public float _MaxAcceleration;
-	public float _DeltaAcceleration;
+	public float _StopAccel;
 	public Vector2f _ImageScale;
 	public Rectangle _CollisionRange;
 	public EntityTexture _ImageTexture;
@@ -17,7 +17,7 @@ public abstract class DataType {
 		super();
 		this._MaxVelocity = _MaxVelocity;
 		this._MaxAcceleration = _MaxAcceleration;
-		this._DeltaAcceleration=_DeltaAcceleration;
+		this._StopAccel=_DeltaAcceleration;
 		this._ImageScale = _ImageScale;
 		this._CollisionRange = _CollisionRange;
 		this._ImageTexture=_ImageTexture;

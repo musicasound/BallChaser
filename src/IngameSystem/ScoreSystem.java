@@ -1,7 +1,5 @@
 package IngameSystem;
 
-import Main.GlobalDataManager;
-
 enum Winner{P1, P2, DRAW};
 
 public class ScoreSystem {
@@ -45,7 +43,9 @@ public class ScoreSystem {
 			if(nextTileIdx==catchStartTileIdx)
 			{
 				//현재 볼을 잡고 있는 플레이어의 스코어에 1을 더한다.
+				System.out.println("score is added to player "+currentCatchPlayerIdx);
 				addScore(currentCatchPlayerIdx);
+				System.out.println("score "+Player1Score+" : "+Player2Score);
 			}
 			
 			currentCatchingTileIdx=nextTileIdx;

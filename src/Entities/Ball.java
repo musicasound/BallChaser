@@ -4,6 +4,7 @@ import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 import Displays.DisplayManager;
+import IngameSystem.GlobalDataManager;
 import Physics.Transform;
 import Textures.EntityTexture;
 
@@ -16,14 +17,18 @@ public class Ball extends Entity{
 	
 	boolean isCatched=false;
 	int catchingPlayerIdx=-1;
+	Rectangle _CollisionRange;
 	
 	
 	public Ball(Vector2f position)
 	{
-		super(new Transform(position, 0.0f,new Vector2f(1,1)));//scale 1*1
-		this.velocityScale=0.0f;
-		this.velocityDirection=new Vector2f(0.0f, 0.0f);
-		this._Acceleration=6.0f;
+		super(new Transform(position, 0.0f,new Vector2f(30,30)));//scale 1*1
+		this.velocityScale=360.0f;
+		this.velocityDirection=new Vector2f(1f, 1.0f);
+		velocityDirection.normalise();
+		//this._Acceleration=30.0f;
+		this._Acceleration=0.0f;
+		this._CollisionRange=new Rectangle(0,0, 30,30);
 	}
 	
 	public void update()
@@ -48,7 +53,7 @@ public class Ball extends Entity{
 		else//else if ball is catched
 		{
 			//위치를 현재 공을 갖고 있는 플레이어의 위치와 같게 한다.
-			
+			//CollisionManager에서 처리.
 		}
 		
 		
@@ -105,29 +110,37 @@ public class Ball extends Entity{
 		return isCatched;
 	}
 
-	public void setCatched(boolean isCatched) {
-		this.isCatched = isCatched;
-	}
-
 	public int getCatchingPlayerIdx() {
 		return catchingPlayerIdx;
 	}
 
 	public void setCatchingPlayerIdx(int catchingPlayerIdx) {
 		this.catchingPlayerIdx = catchingPlayerIdx;
+		if(catchingPlayerIdx==-1)
+		isCatched=false;
+		else
+		isCatched=true;
+	}
+	
+	public float getRadius()
+	{
+		return (float)_CollisionRange.getHeight()/2.0f;
 	}
 
 	/*@@@@@@@@@@@@@@@	수정필요	@@@@@@@@@@@@@@@@@@*/
 	@Override
 	public EntityTexture getEntityTexture() {
 		// TODO Auto-generated method stub
-		return null;
+		return GlobalDataManager.ballTexture;
 	}
 
 	@Override
 	public Rectangle getCollider() {
 		// TODO Auto-generated method stub
-		return null;
+		Vector2f pos=transform.getPosition();
+		
+		return new Rectangle((int)pos.x-_CollisionRange.getWidth()/2, (int)pos.y+_CollisionRange.getHeight()/2, _CollisionRange.getWidth(), _CollisionRange.getHeight());
+		
 	}
 
 	

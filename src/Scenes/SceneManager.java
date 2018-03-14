@@ -10,6 +10,7 @@ public class SceneManager {
 	
 	public static void loadScene(Scene scene)
 	{
+		currentScene.cleanUp();
 		currentScene=scene;
 	}
 	

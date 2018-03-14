@@ -16,7 +16,9 @@ import Displays.DisplayManager;
 import Entities.Tile;
 import Entities.YechanTestEntity;
 import Guis.GuiButton;
+import IngameSystem.GlobalDataManager;
 import Input.String_Input;
+import KeySystem.KeyboardManager;
 import Physics.Transform;
 import Picking.MousePicking;
 import RenderEngine.Loader;
@@ -43,6 +45,7 @@ public class MainLoop {
 		{
 			while(DisplayManager.isUpdate())
 			{
+				KeyboardManager.update();
 				SceneManager.getCurrentScene().update();
 			}
 			

@@ -1,5 +1,6 @@
 package Entities;
 
+import java.util.HashMap;
 import java.util.Queue;
 
 import org.lwjgl.util.Rectangle;
@@ -8,12 +9,14 @@ import org.lwjgl.util.vector.Vector2f;
 import DataTypes.CharacterType;
 import DataTypes.MissileType;
 import Displays.DisplayManager;
+import IngameSystem.GlobalDataManager;
+import KeySystem.KeyboardManager;
 import Physics.Transform;
 import Textures.EntityTexture;
+import KeySystem.CharacterKeySetting;
+
 
 public class Player extends Entity {
-	enum RotationDirection{CCW,CW};
-	enum CharacterStatus{DEAD, LIVE, STUN, BALL_CATCHED};
 	float velocityScale;
 	Vector2f velocityDirection;
 	CharacterStatus status;
@@ -30,6 +33,9 @@ public class Player extends Entity {
 	
 	Rectangle _CollisionRange;
 	
+	HashMap<KeySystem.CharacterKeySetting, Integer> keySettings;//=new HashMap<KeySystem.CharacterKeySetting, Integer>();
+	
+	
 	public Player(CharacterType type, int playerIndex,Vector2f position) {
 		super(position, type._ImageScale);
 		this.playerIndex = playerIndex;
@@ -37,6 +43,7 @@ public class Player extends Entity {
 		this._CollisionRange=new Rectangle(0, 0, 50, 50);//캐릭터에 CollisionRange있음 type.collision...으로변경해야할것같음 -예찬
 		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(0,1);
+		keySettings=GlobalDataManager.getKeySettings(playerIndex);
 	}
 	
 	public CharacterType getType()
@@ -104,8 +111,8 @@ public class Player extends Entity {
 			transform.rotate(-type._RotationSpeed*DisplayManager.fixedDeltaTime());
 			break;
 		}
-		float angle=transform.getRotationAngle();
-		velocityDirection=new Vector2f((float)Math.cos(angle),(float) Math.sin(angle));
+		float angle=(float)Math.toRadians(transform.getRotationAngle());
+		velocityDirection=new Vector2f((float)Math.sin(-angle),(float) Math.cos(-angle));
 		
 	}
 	
@@ -124,7 +131,7 @@ public class Player extends Entity {
 				status=CharacterStatus.LIVE;
 			}
 			
-			velocityScale-=type._DeltaAcceleration*DisplayManager.fixedDeltaTime();
+			velocityScale-=type._StopAccel*DisplayManager.fixedDeltaTime();
 			
 			if(velocityScale<=0.0f)
 			{
@@ -133,14 +140,33 @@ public class Player extends Entity {
 		}
 		else
 		{
-			
-			velocityScale+=type._DeltaAcceleration*DisplayManager.fixedDeltaTime();
-			
-			if(velocityScale>type._MaxVelocity)
+			if(KeyboardManager.isKeyPressed(keySettings.get((CharacterKeySetting.FORWARD))))
 			{
-				velocityScale=type._MaxVelocity;
+			velocityScale+=type._MaxAcceleration*DisplayManager.fixedDeltaTime();
+			
+				if(velocityScale>type._MaxVelocity)
+				{
+					velocityScale=type._MaxVelocity;
+				}
+			}
+			else // key forward가 눌리지 않음
+			{		
+				velocityScale-=type._StopAccel*DisplayManager.fixedDeltaTime();
+			
+				if(velocityScale<=0.0f)
+				{
+					velocityScale=0.0f;
+				}
 			}
 			
+			if(KeyboardManager.isKeyPressed(keySettings.get(CharacterKeySetting.CCW_ROT)))
+			{
+				rotate(RotationDirection.CCW);
+			}
+			else if(KeyboardManager.isKeyPressed(keySettings.get(CharacterKeySetting.CW_ROT)))
+			{
+				rotate(RotationDirection.CW);
+			}
 		}
 		
 		Vector2f pos=new Vector2f(transform.getPosition());
@@ -157,8 +183,16 @@ public class Player extends Entity {
 	{
 		Vector2f pos=transform.getPosition();
 		
-		return new Rectangle((int)pos.x, (int)pos.y, _CollisionRange.getWidth(), _CollisionRange.getHeight());
+		return new Rectangle((int)pos.x-_CollisionRange.getWidth()/2, (int)pos.y+_CollisionRange.getHeight()/2, _CollisionRange.getWidth(), _CollisionRange.getHeight());
 		
+	}
+	
+	public void Die()
+	{
+		status=CharacterStatus.DEAD;
+		this.velocityScale=0.0f;
+		this.velocityDirection=new Vector2f(0,1);
+		transform.setRotationAngle(0.0f);
 	}
 
 	@Override

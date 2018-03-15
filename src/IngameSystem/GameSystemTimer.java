@@ -1,19 +1,27 @@
 package IngameSystem;
 
 import Displays.DisplayManager;
+import Scenes.ResultScene;
+import Scenes.Scene;
+import Scenes.SceneManager;
 
 public class GameSystemTimer {
-	public enum TimerStatus{COUNT_DOWN, IN_PLAY, GAME_OVER};
+	public enum SysTimerStatus{COUNT_DOWN, IN_PLAY, GAME_OVER};
 	
 	public static final float TOTAL_GAMETIME=180.0f;
 	
 	private float currentTime=0.0f;
 	private float countdown_remainTime=5.0f;
-	private TimerStatus status;
+	private SysTimerStatus status;
 	
 	
 	public GameSystemTimer() {
-		status=TimerStatus.COUNT_DOWN;
+		status=SysTimerStatus.COUNT_DOWN;
+	}
+	
+	public SysTimerStatus getStatus()
+	{
+		return status;
 	}
 	
 	public void update()
@@ -25,7 +33,7 @@ public class GameSystemTimer {
 			
 			if(countdown_remainTime<=0.0f)
 			{
-				status=TimerStatus.IN_PLAY;
+				status=SysTimerStatus.IN_PLAY;
 			}
 			
 			break;
@@ -34,7 +42,7 @@ public class GameSystemTimer {
 			
 			if(getRemainGameTime()<=0.0f)
 			{
-				status=TimerStatus.GAME_OVER;
+				status=SysTimerStatus.GAME_OVER;
 			}
 			break;
 		case GAME_OVER:

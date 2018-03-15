@@ -38,8 +38,8 @@ public class MainLoop {
 		
 		Loader loader =new Loader();
 		GlobalDataManager.init(loader);
-		SceneManager.init();
 		TextMaster.init(loader);
+		SceneManager.init();
 		
 		while(!Display.isCloseRequested())
 		{

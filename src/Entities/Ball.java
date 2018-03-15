@@ -4,6 +4,7 @@ import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 import Displays.DisplayManager;
+import IngameSystem.EntityTimer;
 import IngameSystem.GlobalDataManager;
 import Physics.Transform;
 import Textures.EntityTexture;
@@ -19,21 +20,25 @@ public class Ball extends Entity{
 	int catchingPlayerIdx=-1;
 	Rectangle _CollisionRange;
 	
+	EntityTimer collTimer;
 	
 	public Ball(Vector2f position)
 	{
 		super(new Transform(position, 0.0f,new Vector2f(30,30)));//scale 1*1
-		this.velocityScale=360.0f;
+		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(1f, 1.0f);
 		velocityDirection.normalise();
 		//this._Acceleration=30.0f;
-		this._Acceleration=0.0f;
+		this._Acceleration=60.0f;
 		this._CollisionRange=new Rectangle(0,0, 30,30);
+		this.collTimer=new EntityTimer(0.4f);
+		collTimer.start();
 	}
 	
 	public void update()
 	{
 		//accelerate
+		collTimer.update();
 		
 		if(!isCatched)
 		{
@@ -144,8 +149,15 @@ public class Ball extends Entity{
 	}
 
 	
+	//안쪽 boundary와의 충돌체크타이밍을 체크.
+	//버그 방지용
+	public boolean isEnableBoundaryCollision()
+	{
+		return collTimer.isEventOn();
+	}
 
-
-
-
+	public void setEnableBoundaryCollision()
+	{
+		collTimer.start();
+	}
 }

@@ -13,10 +13,12 @@ import Entities.Tile;
 import IngameSystem.CollisionManager;
 import IngameSystem.EntityTimer;
 import IngameSystem.GameSystemTimer;
+import IngameSystem.GameSystemTimer.SysTimerStatus;
 import IngameSystem.GlobalDataManager;
 import IngameSystem.ScoreSystem;
 import RenderEngine.Loader;
 import RenderEngine.Renderer2D;
+import fontMeshCreator.GUIText;
 import fontRendering.TextMaster;
 
 public class IngameScene extends Scene{
@@ -37,6 +39,9 @@ public class IngameScene extends Scene{
 	Renderer2D entityRenderer=new Renderer2D(loader);
 	Renderer2D GUIRenderer=new Renderer2D(loader);
 	
+	GUIText scoreText;
+	GUIText countdownText;
+	
 	//현재 플레이어가 볼을 잡고 있는 타일 인덱스
 	int currentCatchIdx=-1;
 	
@@ -48,10 +53,14 @@ public class IngameScene extends Scene{
 	{
 		ScoreSystem.initialize();
 		
-		ArrayList<Tile> tiles=new ArrayList<Tile>();
 		//YechanTestEntity entity = new YechanTestEntity(texture,new Transform(new Vector2f(150,150),0,new Vector2f(10,10)));
 		loadTiles();
 		loadGameObjects();
+		scoreText=new GUIText("0 : 0", 160.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 360, true);
+		scoreText.setColour(1, 0, 0);
+		
+		countdownText=new GUIText("5", 320.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 360, true);
+		countdownText.setColour(1, 0, 0);
 	}
 	
 	public void update()
@@ -60,12 +69,22 @@ public class IngameScene extends Scene{
 		player1RebirthTimer.update();
 		player2RebirthTimer.update();
 		
-		
-		//if systemTimer가 아직 카운트다운 상태.
-		// return
-		
-		
-		
+		switch(systemTimer.getStatus())
+		{
+		case COUNT_DOWN:
+			break;
+		case IN_PLAY:
+			System.out.println("remain time :"+systemTimer.getRemainGameTime());
+			updateIngame();
+			break;
+		case GAME_OVER:
+			SceneManager.loadScene((Scene)new ResultScene());
+			break;
+		}
+	}
+	
+	private void updateIngame()
+	{
 		player1.update();
 		player2.update();
 		ball.update();
@@ -95,7 +114,7 @@ public class IngameScene extends Scene{
 	public void cleanUp()
 	{
 		missiles.clear();
-		TextMaster.cleanUp();
+		
 	}
 	
 	public void render()
@@ -109,6 +128,7 @@ public class IngameScene extends Scene{
 		if(systemTimer.getCurrentCountDown()>0)
 		{
 			//render countdown
+			
 		}
 		
 		// if player 1 die
@@ -200,7 +220,7 @@ public class IngameScene extends Scene{
 
 	
 	
-	
+	//스코어 시스템을 처리함
 	void processScore()
 	{
 		int catchingPlayerIdx=ball.getCatchingPlayerIdx();
@@ -247,17 +267,22 @@ public class IngameScene extends Scene{
 			//스코어링이 진행중인 경우
 			int nextTileIdx=(currentCatchIdx+1)%GlobalDataManager.TILES_COUNT;
 			
+			//다음 타일을 밟았을 경우
 			if(CollisionManager.CollisionDetected(tiles[nextTileIdx], player))
 			{
-				System.out.println("Collision with tile "+nextTileIdx);
+				//점수를 계산하고
 				ScoreSystem.playerOnTile(nextTileIdx);
+				
+				//타일을 마크한다.
 				tiles[nextTileIdx].setMarked(true);
 				currentCatchIdx=nextTileIdx;
 				
+				//1점을 "득" 했다면
 				if(currentCatchIdx==catchStartIdx)
 				{
 					for(int i=0; i<tiles.length; i++)
 					{
+						//시작 타일을 제외하고 마크를 해제한다.
 						if(i!=catchStartIdx)
 						tiles[i].setMarked(false);
 					}

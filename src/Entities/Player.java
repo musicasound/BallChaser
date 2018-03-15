@@ -40,7 +40,7 @@ public class Player extends Entity {
 		super(position, type._ImageScale);
 		this.playerIndex = playerIndex;
 		this.type=type;
-		this._CollisionRange=new Rectangle(0, 0, 50, 50);//캐릭터에 CollisionRange있음 type.collision...으로변경해야할것같음 -예찬
+		this._CollisionRange=new Rectangle(0, 0, 40, 40);//캐릭터에 CollisionRange있음 type.collision...으로변경해야할것같음 -예찬
 		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(0,1);
 		keySettings=GlobalDataManager.getKeySettings(playerIndex);

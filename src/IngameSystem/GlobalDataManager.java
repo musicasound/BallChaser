@@ -1,5 +1,6 @@
 package IngameSystem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.lwjgl.util.vector.Vector2f;
 import DataTypes.CharacterType;
 import RenderEngine.Loader;
 import Textures.EntityTexture;
+import fontMeshCreator.FontType;
 
 public class GlobalDataManager {
 
@@ -21,6 +23,9 @@ public class GlobalDataManager {
 	public static EntityTexture ballTexture;
 	public static final float TILE_SCALE=120.0f;
 	public static final int TILES_COUNT=16;
+	
+	//표준 폰트
+	public static FontType defaultFontType;
 	
 	public static final float PLAYER_DIETIME=3.0f;
 	
@@ -41,8 +46,10 @@ public class GlobalDataManager {
 		powerfulCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
 		ballTexture=new EntityTexture(loader.loadTexture("images/ball"));
 		
-		speedyCharacter=new CharacterType(120.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), speedyCharTexture, 10.0f, 3.0f, 90.0f);
-		powerfulCharacter=new CharacterType(90.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), powerfulCharTexture, 10.0f, 3.0f, 90.0f);
+		speedyCharacter=new CharacterType(210.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), speedyCharTexture, 10.0f, 3.0f, 90.0f);
+		powerfulCharacter=new CharacterType(180.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), powerfulCharTexture, 10.0f, 3.0f, 90.0f);
+		
+		defaultFontType=new FontType(loader.loadFontTextureAtlas("candara"), new File("res/candara.fnt"));
 		
 		keySettings.add(new HashMap<>());
 		keySettings.add(new HashMap<KeySystem.CharacterKeySetting, Integer>());

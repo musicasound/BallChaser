@@ -178,8 +178,10 @@ public class CollisionManager {
 	  
 
 	  //공과 안쪽 사이드가 충돌했을 때
-	  	if(intersect(ball.getCollider(), coll))
+	  	if(intersect(ball.getCollider(), coll) && ball.isEnableBoundaryCollision())
 	  {     //왼쪽
+	  	ball.setEnableBoundaryCollision();
+	  	
 	     if(pos.x<coll.getX())
 	     {
 	       ball.Reflect(new Vector2f(-1.0f, 0.0f));

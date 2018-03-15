@@ -3,7 +3,7 @@ package fontMeshCreator;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import fontRendering.TextMaster;
+import fontRendering.RenderTextMaster;
 
 /**
  * Represents a piece of text in the game.
@@ -19,7 +19,95 @@ public class GUIText {
 	private int textMeshVao;
 	private int vertexCount;
 	private Vector3f colour = new Vector3f(0f, 0f, 0f);
+	private Vector3f borderColour = new Vector3f(0f, 0f, 0f);
+	private float width =0.5f;
+	private float edge =0.2f;
+	private float borderWidth =0f;
+	private float borderEdge =0.2f;
+	private Vector2f shadowOffset=new Vector2f(0f, 0f);;
+	
+	
+	
+	public void setCustomizing(Vector3f colour, Vector3f borderColour, float width, float edge, float borderWidth, float borderEdge,
+			Vector2f shadowOffset) {
+		this.colour = colour;
+		this.borderColour = borderColour;
+		this.width = width;
+		this.edge = edge;
+		this.borderWidth = borderWidth;
+		this.borderEdge = borderEdge;
+		this.shadowOffset = shadowOffset;
+	}
 
+
+	public Vector3f getBorderColour() {
+		return borderColour;
+	}
+
+
+	public float getWidth() {
+		return width;
+	}
+
+
+	public float getEdge() {
+		return edge;
+	}
+
+
+	public float getBorderWidth() {
+		return borderWidth;
+	}
+
+
+	public float getBorderEdge() {
+		return borderEdge;
+	}
+
+
+	public Vector2f getShadowOffset() {
+		return shadowOffset;
+	}
+
+
+	public void setColour(Vector3f colour) {
+		this.colour = colour;
+	}
+
+
+	public void setBorderColour(Vector3f borderColour) {
+		this.borderColour = borderColour;
+	}
+
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+
+	public void setEdge(float edge) {
+		this.edge = edge;
+	}
+
+
+	public void setBorderWidth(float borderWidth) {
+		this.borderWidth = borderWidth;
+	}
+
+
+	public void setBorderEdge(float borderEdge) {
+		this.borderEdge = borderEdge;
+	}
+
+
+	public void setShadowOffset(Vector2f shadowOffset) {
+		this.shadowOffset = shadowOffset;
+	}
+
+
+
+	
+	
 	private Vector2f position;
 	private float lineMaxSize;
 	private int numberOfLines;
@@ -62,17 +150,9 @@ public class GUIText {
 		this.lineMaxSize = maxLineLength;
 		this.centerText = centered;
 		
-		TextMaster.loadText(this);//String에따른 vertex정보와 texture좌표들 로드후 렌더러에추가
 	}
 
-	/**
-	 * Remove the text from the screen.
-	 */
-	public void remove() {
-		TextMaster.removeText(this);
-		// remove text
-	}
-
+	
 	/**
 	 * @return The font used by this text.
 	 */

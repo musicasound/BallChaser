@@ -1,13 +1,14 @@
 package Scenes;
 
+import IngameSystem.GlobalDataManager;
 import RenderEngine.Loader;
-import RenderEngine.Renderer2D;
+import RenderEngine.Render2DMaster;
 
 public abstract class Scene {
 	
 	protected Loader loader=new Loader();
-	protected Renderer2D entityRenderer=new Renderer2D(loader);
-	protected Renderer2D guiRenderer=new Renderer2D(loader);
+	protected Render2DMaster entityRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
+	protected Render2DMaster guiRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
 
 	public abstract void update();
 	public abstract void cleanUp();

@@ -11,8 +11,11 @@ import org.lwjgl.util.vector.Vector2f;
 
 import DataTypes.CharacterType;
 import RenderEngine.Loader;
+import Shaders.Shader2D;
 import Textures.EntityTexture;
 import fontMeshCreator.FontType;
+import fontRendering.FontRenderer;
+import fontRendering.FontShader;
 
 public class GlobalDataManager {
 
@@ -23,6 +26,16 @@ public class GlobalDataManager {
 	public static EntityTexture ballTexture;
 	public static final float TILE_SCALE=120.0f;
 	public static final int TILES_COUNT=16;
+	
+	//일관성있게 하지 않은점 죄송함당..  2DRenderer 라는 클래스가 생략되었습니다.
+	//shader program 
+	//shader 는 shaderProgram 
+	//renderer 는 shader를 인자로받아 생성되고  opengl상태를 변경하는등.. function집합  이둘은 static함
+	//scene에서 생성되는 Master(ex RendertextMaster,Render2DMaster)는 Object들을 모은뒤에 생성할때정한 static renderer로 render한다.
+	public static Shader2D shader2D =new Shader2D();
+	
+	private static FontShader fontShader  =new FontShader();
+	public static FontRenderer fontRenderer = new FontRenderer(fontShader);
 	
 	//표준 폰트
 	public static FontType defaultFontType;

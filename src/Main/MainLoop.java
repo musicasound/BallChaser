@@ -22,12 +22,12 @@ import KeySystem.KeyboardManager;
 import Physics.Transform;
 import Picking.MousePicking;
 import RenderEngine.Loader;
-import RenderEngine.Renderer2D;
+import RenderEngine.Render2DMaster;
 import Scenes.SceneManager;
 import Textures.EntityTexture;
 import fontMeshCreator.FontType;
 import fontMeshCreator.GUIText;
-import fontRendering.TextMaster;
+import fontRendering.RenderTextMaster;
 
 
 
@@ -38,7 +38,6 @@ public class MainLoop {
 		
 		Loader loader =new Loader();
 		GlobalDataManager.init(loader);
-		TextMaster.init(loader);
 		SceneManager.init();
 		
 		while(!Display.isCloseRequested())
@@ -54,8 +53,6 @@ public class MainLoop {
 			SceneManager.getCurrentScene().render();
 			//Render
 
-			TextMaster.render();//문제 그냥넣어버림 넣고빼기불가,vao,vbo,삭제불가
-			
 			
 			//update delta time and display
 			DisplayManager.updateDisplay();

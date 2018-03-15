@@ -19,7 +19,7 @@ import Physics.Transform;
 import Shaders.Shader2D;
 import Textures.EntityTexture;
 
-public class Renderer2D {
+public class Render2DMaster {
 	//same quad 모델
 	
 	private Map<EntityTexture, List<Entity>> instancingEntities = new HashMap<EntityTexture, List<Entity>>();
@@ -28,10 +28,10 @@ public class Renderer2D {
 	private final VaoObject quad ;//2d는 항상 같은 로컬 좌표 (-0.5,-0.5)~(0.5,0.5)정사각형
 	private Shader2D shader;
 	
-	public Renderer2D(Loader loader) {
+	public Render2DMaster(Loader loader,Shader2D shader) {
 		float[]positions = {-0.5f,0.5f,-0.5f,-0.5f,0.5f,0.5f,0.5f,-0.5f};//using triangle Strips
 		quad=loader.loadToVAO(positions,2);
-		shader = new Shader2D();
+		this.shader=shader;
 	}
 
 	

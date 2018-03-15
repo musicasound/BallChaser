@@ -2,8 +2,10 @@ package Scenes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 
 import Entities.Ball;
 import Entities.CharacterStatus;
@@ -17,9 +19,9 @@ import IngameSystem.GameSystemTimer.SysTimerStatus;
 import IngameSystem.GlobalDataManager;
 import IngameSystem.ScoreSystem;
 import RenderEngine.Loader;
-import RenderEngine.Renderer2D;
+import RenderEngine.Render2DMaster;
 import fontMeshCreator.GUIText;
-import fontRendering.TextMaster;
+import fontRendering.RenderTextMaster;
 
 public class IngameScene extends Scene{
 	
@@ -35,9 +37,16 @@ public class IngameScene extends Scene{
 	Ball ball;
 	
 	Loader loader=new Loader();
-	Renderer2D tileRenderer=new Renderer2D(loader);
-	Renderer2D entityRenderer=new Renderer2D(loader);
-	Renderer2D GUIRenderer=new Renderer2D(loader);
+	Render2DMaster tileRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
+	Render2DMaster entityRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
+	Render2DMaster GUIRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
+	
+	RenderTextMaster rendertextMaster =new RenderTextMaster(loader,GlobalDataManager.fontRenderer);
+	
+	//현재 그럴듯한 하드코딩으로 dynamic text에대해 자원관리.. 그냥루프마다 String에대한 vao,vbo할당하고 draw하고 할당해제
+	Loader loaderForDynamicText=new Loader();
+	RenderTextMaster renderDynamicTextMaster =new RenderTextMaster(loaderForDynamicText,GlobalDataManager.fontRenderer);
+	int curTime;//실험코드 무시..
 	
 	GUIText scoreText;
 	GUIText countdownText;
@@ -56,12 +65,12 @@ public class IngameScene extends Scene{
 		//YechanTestEntity entity = new YechanTestEntity(texture,new Transform(new Vector2f(150,150),0,new Vector2f(10,10)));
 		loadTiles();
 		loadGameObjects();
-		scoreText=new GUIText("0 : 0", 160.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 360, true);
-		scoreText.setColour(1, 0, 0);
+		loadGuis();
 		
-		countdownText=new GUIText("5", 320.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 360, true);
-		countdownText.setColour(1, 0, 0);
+	
 	}
+	
+	
 	
 	public void update()
 	{
@@ -74,7 +83,7 @@ public class IngameScene extends Scene{
 		case COUNT_DOWN:
 			break;
 		case IN_PLAY:
-			System.out.println("remain time :"+systemTimer.getRemainGameTime());
+			
 			updateIngame();
 			break;
 		case GAME_OVER:
@@ -83,11 +92,43 @@ public class IngameScene extends Scene{
 		}
 	}
 	
+	public void loadGuis() {
+		scoreText=new GUIText("0 : 0", 2.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 1.0f, true);
+		scoreText.setColour(1, 1, 1);
+		rendertextMaster.loadText(scoreText);
+	}
+	
+	public void updateDynamicGuiText() {
+		
+		//화면잘돌아가나 실험하는코드 무시..
+		float floatTime=systemTimer.getRemainGameTime();
+		if(curTime ==(int)floatTime) {
+			return;
+		}
+		
+		
+		curTime=(int)floatTime;
+		/*이전에 렌더링리스트와 gpu자원 없애기*/
+		loaderForDynamicText.cleanUp();
+		renderDynamicTextMaster.cleanUpList();
+		
+		/**/
+		System.out.print(curTime);
+		String remainGameTimeStr=String.valueOf(curTime);
+		countdownText=new GUIText(remainGameTimeStr, 5.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0.3f), 1.0f, true);
+		Random random=new Random();
+		countdownText.setCustomizing(new Vector3f(random.nextFloat(),random.nextFloat(),random.nextFloat()),
+				new Vector3f(random.nextFloat(),random.nextFloat(),random.nextFloat()),
+				0.5f, 0.2f, 0.5f, 0.3f,new Vector2f(0.006f,0.0006f));
+		renderDynamicTextMaster.loadText(countdownText);
+	}
+	
 	private void updateIngame()
 	{
 		player1.update();
 		player2.update();
 		ball.update();
+		updateDynamicGuiText();
 		
 		for(Missile missile : missiles)
 		{
@@ -124,6 +165,8 @@ public class IngameScene extends Scene{
 		tileRenderer.render();
 		entityRenderer.render();
 		guiRenderer.render();
+		rendertextMaster.render();
+		renderDynamicTextMaster.render();
 		
 		if(systemTimer.getCurrentCountDown()>0)
 		{

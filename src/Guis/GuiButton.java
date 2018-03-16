@@ -55,62 +55,71 @@ public class GuiButton extends Entity{
 			updatePickingEvent();
 		}
 		else {
-			while(Mouse.next()) {}
+			
 			nonEvent();
 		}
 	}
 	
 	
 	public void updatePickingEvent() {
-		if(state!=GuiButtonState.MOUSEBUTTONDOWN && state!=GuiButtonState.CLICKED)
-			mouseOn();
-		while(Mouse.next()) {
-		    if (Mouse.getEventButton() > -1) {
-		    	//누르기
-		        if (Mouse.getEventButtonState()) {
-		        	//왼쪽누르기
-		            if(Mouse.getEventButton()==0) {
-		            	mouseButtonDown();
-		            }
-		            	
-		        }
-		        //떼기
-		        else {
-		        	//왼쪽떼기
-		        	if(Mouse.getEventButton()==0) {
-		        		if(state==GuiButtonState.MOUSEBUTTONDOWN)
-		        			mouseClicked();
-		            }
-		        }
-		    }
+		//눌리면
+		if(Mouse.isButtonDown(0)) {
+			
+			mouseButtonDown();
+		}
+		// 안눌리면
+		else {
+			//아직눌리기전이면
+			if (state != GuiButtonState.MOUSEBUTTONDOWN && state != GuiButtonState.CLICKED) {
+				
+				mouseOn();
+			}
+			//눌린후라면
+			if (state == GuiButtonState.MOUSEBUTTONDOWN) {
+				mouseClicked();
+			}
 		}
 	}
 	
 	
 	
 	protected void mouseOn() {
+		if(isSameState(GuiButtonState.MOUSEON))
+			return;
 		state=GuiButtonState.MOUSEON;
 		current_texture=tex_mouseOn;
 	}
 	
 	//안쓰임
 	protected void mouseClicked() {
+		if(isSameState(GuiButtonState.CLICKED))
+			return;
 		state=GuiButtonState.CLICKED;
 		current_texture=tex_clickFinish;
 	}
 	
 	protected void mouseButtonDown() {
+		if(isSameState(GuiButtonState.MOUSEBUTTONDOWN))
+			return;
 		state=GuiButtonState.MOUSEBUTTONDOWN;
 		current_texture=tex_mouseButtonDown;
 		
 	}
 	
 	protected void nonEvent() {
+		if(isSameState(GuiButtonState.NONEVENT))
+			return;
 		state=GuiButtonState.NONEVENT;
 		current_texture=tex_nonEvent;
 	}
 	
 
+	protected boolean isSameState(GuiButtonState state) {
+		if(this.state==state)
+			return true;
+		return false;
+	}
+	
 	@Override
 	public Rectangle getCollider() {
 		// TODO Auto-generated method stub

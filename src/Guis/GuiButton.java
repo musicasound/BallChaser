@@ -11,26 +11,27 @@ import Picking.MousePicking;
 import Textures.EntityTexture;
 
 enum GuiButtonState {
-	MOUSEBUTTONDOWN, NONEVENT,MOUSEBUTTONUP,MOUSEON
+	MOUSEBUTTONDOWN, NONEVENT,CLICKED,MOUSEON
 }
 
 public class GuiButton extends Entity{
 	private EntityTexture tex_mouseButtonDown;
 	private EntityTexture tex_mouseOn;
-	private EntityTexture tex_mouseButtonUp;
+	private EntityTexture tex_clickFinish;
 	private EntityTexture tex_nonEvent;
 	private EntityTexture current_texture;
 	private Rectangle _CollisionRange;
 
 	private GuiButtonState state=GuiButtonState.NONEVENT;
 	
+	public boolean isClicked=false;
 	
 	public GuiButton(Transform transform, EntityTexture tex_mouseButtonDown, EntityTexture tex_mouseOn,
-			EntityTexture tex_mouseButtonUp, EntityTexture tex_nonEvent) {
+			EntityTexture tex_clickFinish, EntityTexture tex_nonEvent) {
 		super(transform);
 		this.tex_mouseButtonDown = tex_mouseButtonDown;
 		this.tex_mouseOn = tex_mouseOn;
-		this.tex_mouseButtonUp = tex_mouseButtonUp;
+		this.tex_clickFinish = tex_clickFinish;
 		this.tex_nonEvent = tex_nonEvent;
 		this.current_texture = tex_nonEvent;
 		
@@ -49,40 +50,62 @@ public class GuiButton extends Entity{
 	public void updatePicking(MousePicking mousePicking) {
 		Vector2f worldMousePos = mousePicking.getCurrentMousePos();
 		System.out.println(_CollisionRange);
+		System.out.println(worldMousePos);
 		if(_CollisionRange.contains((int)worldMousePos.x,(int)worldMousePos.y)) {
 			updatePickingEvent();
 		}
-		
+		else {
+			while(Mouse.next()) {}
+			nonEvent();
+		}
 	}
 	
 	
 	public void updatePickingEvent() {
+		if(state!=GuiButtonState.MOUSEBUTTONDOWN && state!=GuiButtonState.CLICKED)
+			mouseOn();
 		while(Mouse.next()) {
 		    if (Mouse.getEventButton() > -1) {
+		    	//´©¸£±â
 		        if (Mouse.getEventButtonState()) {
-		            System.out.println("PRESSED MOUSE BUTTON: " + Mouse.getEventButton());
+		        	//¿ÞÂÊ´©¸£±â
+		            if(Mouse.getEventButton()==0) {
+		            	mouseButtonDown();
+		            }
+		            	
 		        }
-		        else System.out.println("RELEASED MOUSE BUTTON: " + Mouse.getEventButton());
+		        //¶¼±â
+		        else {
+		        	//¿ÞÂÊ¶¼±â
+		        	if(Mouse.getEventButton()==0) {
+		        		if(state==GuiButtonState.MOUSEBUTTONDOWN)
+		        			mouseClicked();
+		            }
+		        }
 		    }
 		}
 	}
 	
-	public void mouseOn() {
+	
+	
+	protected void mouseOn() {
 		state=GuiButtonState.MOUSEON;
 		current_texture=tex_mouseOn;
 	}
 	
-	public void mouseButtonUp() {
-		state=GuiButtonState.MOUSEBUTTONUP;
-		current_texture=tex_mouseButtonUp;
+	//¾È¾²ÀÓ
+	protected void mouseClicked() {
+		state=GuiButtonState.CLICKED;
+		current_texture=tex_clickFinish;
 	}
 	
-	public void mouseButtonDown() {
+	protected void mouseButtonDown() {
 		state=GuiButtonState.MOUSEBUTTONDOWN;
 		current_texture=tex_mouseButtonDown;
+		
 	}
 	
-	public void nonEvent() {
+	protected void nonEvent() {
 		state=GuiButtonState.NONEVENT;
 		current_texture=tex_nonEvent;
 	}
@@ -91,7 +114,7 @@ public class GuiButton extends Entity{
 	@Override
 	public Rectangle getCollider() {
 		// TODO Auto-generated method stub
-		return null;
+		return _CollisionRange;
 	}
 
 

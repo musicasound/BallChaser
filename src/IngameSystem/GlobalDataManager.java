@@ -10,6 +10,7 @@ import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 import DataTypes.CharacterType;
+import Picking.MousePicking;
 import RenderEngine.Loader;
 import Shaders.Shader2D;
 import Textures.EntityTexture;
@@ -26,6 +27,8 @@ public class GlobalDataManager {
 	public static EntityTexture ballTexture;
 	public static final float TILE_SCALE=120.0f;
 	public static final int TILES_COUNT=16;
+	
+	public static MousePicking mousePicking;
 	
 	//일관성있게 하지 않은점 죄송함당..  2DRenderer 라는 클래스가 생략되었습니다.
 	//shader program 
@@ -58,6 +61,8 @@ public class GlobalDataManager {
 		speedyCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
 		powerfulCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
 		ballTexture=new EntityTexture(loader.loadTexture("images/ball"));
+		
+		mousePicking=new MousePicking();
 		
 		speedyCharacter=new CharacterType(210.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), speedyCharTexture, 10.0f, 3.0f, 90.0f);
 		powerfulCharacter=new CharacterType(180.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), powerfulCharTexture, 10.0f, 3.0f, 90.0f);

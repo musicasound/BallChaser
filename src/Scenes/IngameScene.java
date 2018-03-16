@@ -12,14 +12,17 @@ import Entities.CharacterStatus;
 import Entities.Missile;
 import Entities.Player;
 import Entities.Tile;
+import Guis.GuiButton;
 import IngameSystem.CollisionManager;
 import IngameSystem.EntityTimer;
 import IngameSystem.GameSystemTimer;
 import IngameSystem.GameSystemTimer.SysTimerStatus;
 import IngameSystem.GlobalDataManager;
 import IngameSystem.ScoreSystem;
+import Physics.Transform;
 import RenderEngine.Loader;
 import RenderEngine.Render2DMaster;
+import Textures.EntityTexture;
 import fontMeshCreator.GUIText;
 import fontRendering.RenderTextMaster;
 
@@ -35,6 +38,8 @@ public class IngameScene extends Scene{
 	EntityTimer player2RebirthTimer=new EntityTimer(GlobalDataManager.PLAYER_DIETIME);
 	
 	Ball ball;
+	
+	GuiButton quitButton;
 	
 	Loader loader=new Loader();
 	Render2DMaster tileRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
@@ -96,6 +101,16 @@ public class IngameScene extends Scene{
 		scoreText=new GUIText("0 : 0", 2.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 1.0f, true);
 		scoreText.setColour(1, 1, 1);
 		rendertextMaster.loadText(scoreText);
+		
+		/*버튼로드 이벤트 매니저 생성해서 관리해야할것같다..*/
+		EntityTexture downedButton=new EntityTexture(loader.loadTexture("images/redButton"));
+		EntityTexture clickedButton=new EntityTexture(loader.loadTexture("images/orengeButton"));
+		EntityTexture nonEventButton=new EntityTexture(loader.loadTexture("images/yellowButton"));
+		EntityTexture mouseOnButton=new EntityTexture(loader.loadTexture("images/ball"));
+		Transform guiTransform = new Transform(new Vector2f(150,150),30,new Vector2f(70,70));
+		quitButton = new GuiButton(guiTransform, downedButton,mouseOnButton,clickedButton,nonEventButton);
+		
+		
 	}
 	
 	public void updateDynamicGuiText() {
@@ -125,10 +140,14 @@ public class IngameScene extends Scene{
 	
 	private void updateIngame()
 	{
+		GlobalDataManager.mousePicking.update();//현재좌표얻어오기
+		
 		player1.update();
 		player2.update();
 		ball.update();
 		updateDynamicGuiText();
+		quitButton.update(GlobalDataManager.mousePicking);
+		
 		
 		for(Missile missile : missiles)
 		{
@@ -150,6 +169,7 @@ public class IngameScene extends Scene{
 		processPlayerTimer();
 		
 		CollisionManager.checkReflection(ball);
+		
 	}
 	
 	public void cleanUp()
@@ -164,9 +184,10 @@ public class IngameScene extends Scene{
 		
 		tileRenderer.render();
 		entityRenderer.render();
-		guiRenderer.render();
+
 		rendertextMaster.render();
 		renderDynamicTextMaster.render();
+		GUIRenderer.render();
 		
 		if(systemTimer.getCurrentCountDown()>0)
 		{
@@ -191,6 +212,7 @@ public class IngameScene extends Scene{
 		entityRenderer.processInstancingEntity(player1);
 		entityRenderer.processInstancingEntity(player2);
 		entityRenderer.processInstancingEntity(ball);
+		GUIRenderer.processInstancingEntity(quitButton);
 	}
 	
 	private void loadGameObjects()

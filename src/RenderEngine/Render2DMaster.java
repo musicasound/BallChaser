@@ -144,9 +144,7 @@ public class Render2DMaster {
 		nonInstancingEntities.add(entity);
 	}
 	
-	public void initialize() {
-		instancingEntities = new HashMap<EntityTexture, List<Entity>>();
-	}
+
 	
 	public void cleanUp() {
 		shader.cleanUp();

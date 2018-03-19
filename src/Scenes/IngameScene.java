@@ -31,7 +31,7 @@ import RenderEngine.Render2DMaster;
 import Textures.EntityTexture;
 import fontMeshCreator.GUIText;
 import fontRendering.RenderTextMaster;
-
+ 
 public class IngameScene extends Scene{
 	
 	Tile[] tiles=new Tile[16];

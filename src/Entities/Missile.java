@@ -14,7 +14,6 @@ public class Missile extends Entity {
 	
 	//타입에 따른 처리는 인게임 시스템에서 한다.
 	MissileType type;
-	Transform transform;
 	Vector2f velocityDirection;
 	int targetPlayerIndex;
 	Rectangle _CollisionRange;
@@ -22,11 +21,11 @@ public class Missile extends Entity {
 	
 	public Missile(MissileType type, Vector2f position, Vector2f moveDirection, int targetPlayerIdx 
 			) {
-		super(position, new Vector2f(50.0f, 50.0f));
+		super(position, new Vector2f(40.0f, 40.0f));
 		this.type=type;
 		this.velocityDirection=moveDirection;
 		this.targetPlayerIndex=targetPlayerIdx;
-		this._CollisionRange=new Rectangle(0,0, 50,50);
+		this._CollisionRange=new Rectangle(0,0, 30,30);
 	}
 	
 	public void update()

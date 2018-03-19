@@ -1,6 +1,7 @@
 package IngameSystem;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
@@ -82,9 +83,12 @@ public class CollisionManager {
 			return;
 		}
 		
+		Iterator<Missile> missileIter=missiles.iterator();
 		//미사일과의 충돌을 처리한다.
-		for(Missile missile : missiles)
+		while(missileIter.hasNext())
 		{
+			Missile missile=missileIter.next();
+			
 			if(CollisionDetected(missile, player))
 			{
 				//플레이어가 볼을 가지고 있었다면
@@ -94,7 +98,8 @@ public class CollisionManager {
 					missTheBall(ball, player);
 				}
 				
-				missiles.remove(missile);
+				missileIter.remove();
+				continue;
 				
 				//generate particle
 			}
@@ -102,7 +107,7 @@ public class CollisionManager {
 			if(isOutsideOfBoundary(missile))
 			{
 				
-				missiles.remove(missile);
+				missileIter.remove();
 				
 				//generate particle
 			}
@@ -110,7 +115,7 @@ public class CollisionManager {
 		
 		for(DeadSpace space : deadSpaces)
 		{
-			if(!space.isDeadStatus()) return;
+			if(!space.isDeadStatus()) continue;
 			
 			if(CollisionDetected(player, space))
 			{

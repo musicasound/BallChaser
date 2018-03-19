@@ -3,6 +3,7 @@ package Main;
 
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
@@ -12,6 +13,8 @@ import org.lwjgl.util.vector.Vector2f;
 
 import com.sun.corba.se.spi.orbutil.fsm.Input;
 
+import AudioSystem.AudioManager;
+import AudioSystem.SoundSource;
 import Displays.DisplayManager;
 import Entities.Tile;
 import Entities.YechanTestEntity;
@@ -32,13 +35,17 @@ import fontRendering.RenderTextMaster;
 
 
 public class MainLoop {
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		DisplayManager.createDisplay();
 		
 		Loader loader =new Loader();
 		GlobalDataManager.init(loader);
 		SceneManager.init();
+		AudioManager.init();
+		AudioManager.setListenerData();
+
+		
 		
 		while(!Display.isCloseRequested())
 		{
@@ -57,6 +64,7 @@ public class MainLoop {
 			//update delta time and display
 			DisplayManager.updateDisplay();
 		}
+		
 	}
 	
 	

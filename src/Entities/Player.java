@@ -1,5 +1,6 @@
 package Entities;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Queue;
 
@@ -9,7 +10,9 @@ import org.lwjgl.util.vector.Vector2f;
 import DataTypes.CharacterType;
 import DataTypes.MissileType;
 import Displays.DisplayManager;
+import IngameSystem.EntityTimer;
 import IngameSystem.GlobalDataManager;
+import IngameSystem.GlobalMissileManager;
 import KeySystem.KeyboardManager;
 import Physics.Transform;
 import Textures.EntityTexture;
@@ -22,7 +25,7 @@ public class Player extends Entity {
 	CharacterStatus status;
 	float stun_remainTime;
 	float pushCool_remainTime;
-	Queue<MissileType> missileItemQueue;
+	ArrayList<MissileType> missileItemQueue;
 	CharacterType type;
 	//1P인지 2P인지 구분
 	int playerIndex;
@@ -32,6 +35,10 @@ public class Player extends Entity {
 	boolean isSlow;
 	
 	Rectangle _CollisionRange;
+	
+	EntityTimer slowTimer;
+	EntityTimer missileShotTimer;
+	
 	
 	HashMap<KeySystem.CharacterKeySetting, Integer> keySettings;//=new HashMap<KeySystem.CharacterKeySetting, Integer>();
 	
@@ -44,6 +51,14 @@ public class Player extends Entity {
 		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(0,1);
 		keySettings=GlobalDataManager.getKeySettings(playerIndex);
+		this.status=CharacterStatus.LIVE;
+		this.missileItemQueue=new ArrayList<MissileType>();
+		
+		slowTimer=new EntityTimer(4.0f);
+		slowTimer.stop();
+		
+		missileShotTimer=new EntityTimer(1.0f);
+		missileShotTimer.start();
 	}
 	
 	public CharacterType getType()
@@ -89,14 +104,24 @@ public class Player extends Entity {
 	}
 
 	
-	public void addMissile(MissileType missile)
+	public void addMissileInQueue(MissileType missile)
 	{
+		if(missileItemQueue.size()>=3)
+		{
+			missileItemQueue.remove(2);
+		}
+		
 		missileItemQueue.add(missile);
 	}
 	
 	public MissileType popMissile()
 	{
-		return missileItemQueue.poll();
+		if(missileItemQueue.isEmpty()) return null;
+		
+		MissileType ret=missileItemQueue.get(0);
+		missileItemQueue.remove(0);
+		
+		return ret;
 	}
 	
 	//방향키에 따라서 회전함. 외부에서 처리
@@ -118,6 +143,8 @@ public class Player extends Entity {
 	
 	public void update()
 	{
+		missileShotTimer.update();
+		
 		//
 		if(status==CharacterStatus.DEAD)
 			return;
@@ -136,6 +163,18 @@ public class Player extends Entity {
 			if(velocityScale<=0.0f)
 			{
 				velocityScale=0.0f;
+			}
+		}
+		else if(status==CharacterStatus.SLOW)
+		{
+			slowTimer.update();
+			
+			Move();
+			
+			if(slowTimer.isEventOn())
+			{
+				status=CharacterStatus.LIVE;
+				slowTimer.stop();
 			}
 		}
 		else
@@ -167,14 +206,33 @@ public class Player extends Entity {
 			{
 				rotate(RotationDirection.CW);
 			}
+			
+			if(KeyboardManager.isKeyPressed(keySettings.get(CharacterKeySetting.MISSILE_SHOT)))
+			{
+				if(missileShotTimer.isEventOn())
+				{
+					//instantiate missile
+					System.out.println("instantiate missile");
+					
+					if(!missileItemQueue.isEmpty())
+					{
+						MissileType type=missileItemQueue.get(0);
+						missileItemQueue.remove(0);
+						
+						float angle=(float)Math.toRadians(transform.getRotationAngle());
+						velocityDirection=new Vector2f((float)Math.sin(-angle),(float) Math.cos(-angle));
+						int targetPlayerIdx= (playerIndex==1? 2 : 1);
+						
+						GlobalMissileManager.Instantiate(new Missile(type, new Vector2f(transform.getPosition()), velocityDirection, targetPlayerIdx));
+					}
+					
+					//set timer
+					missileShotTimer.start();
+				}
+			}
 		}
 		
-		Vector2f pos=new Vector2f(transform.getPosition());
-		Vector2f delta=new Vector2f(velocityDirection);
-		delta.scale(velocityScale*DisplayManager.fixedDeltaTime());
-		
-		Vector2f.add(pos, delta, pos);
-		transform.setPosition(pos);
+		Move();
 	}
 	
 	
@@ -187,12 +245,44 @@ public class Player extends Entity {
 		
 	}
 	
+	private void initTimers()
+	{
+		slowTimer.stop();
+	}
+	
 	public void Die()
 	{
+		initTimers();
 		status=CharacterStatus.DEAD;
 		this.velocityScale=0.0f;
 		this.velocityDirection=new Vector2f(0,1);
 		transform.setRotationAngle(0.0f);
+		
+	}
+	
+	private void Move()
+	{
+		Vector2f pos=new Vector2f(transform.getPosition());
+		Vector2f delta=new Vector2f(velocityDirection);
+		delta.scale(velocityScale*DisplayManager.fixedDeltaTime());
+		
+		Vector2f.add(pos, delta, pos);
+		transform.setPosition(pos);
+	}
+	
+	public void Stun()
+	{
+		initTimers();
+		status=CharacterStatus.STUN;
+		stun_remainTime=GlobalDataManager.STUN_TOTAL_TIME;
+	}
+	
+	public void Slow()
+	{
+		initTimers();
+		velocityScale=10.0f;
+		status=CharacterStatus.SLOW;
+		slowTimer.start();
 	}
 
 	@Override
@@ -201,5 +291,13 @@ public class Player extends Entity {
 		return type._ImageTexture;
 	}
 	
+	public void Separate(Missile missile)
+	{
+		float angle=(float)Math.atan(missile.getVelocityDirection().y/missile.getVelocityDirection().x);
+		angle+=Math.toRadians(-45.0f);
+		
+		transform.setRotationAngle((float)Math.toDegrees(angle));
+		velocityScale=120.0f;
+	}
 	
 }

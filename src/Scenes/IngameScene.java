@@ -1,15 +1,20 @@
 package Scenes;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
+import DataTypes.MissileType;
 import Entities.Ball;
+import Entities.CautionMark;
 import Entities.CharacterStatus;
+import Entities.DeadSpace;
 import Entities.Missile;
+import Entities.MissileItem;
 import Entities.Player;
 import Entities.Tile;
 import Guis.GuiButton;
@@ -18,6 +23,7 @@ import IngameSystem.EntityTimer;
 import IngameSystem.GameSystemTimer;
 import IngameSystem.GameSystemTimer.SysTimerStatus;
 import IngameSystem.GlobalDataManager;
+import IngameSystem.GlobalMissileManager;
 import IngameSystem.ScoreSystem;
 import Physics.Transform;
 import RenderEngine.Loader;
@@ -29,7 +35,8 @@ import fontRendering.RenderTextMaster;
 public class IngameScene extends Scene{
 	
 	Tile[] tiles=new Tile[16];
-	ArrayList<Missile> missiles=new ArrayList<Missile>();
+	ArrayList<CautionMark> cautionMarks=new ArrayList<CautionMark>();
+	ArrayList<DeadSpace> deadSpaces=new ArrayList<DeadSpace>();
 	Player player1;
 	Player player2;
 	
@@ -45,7 +52,6 @@ public class IngameScene extends Scene{
 	Render2DMaster tileRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
 	Render2DMaster entityRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
 	Render2DMaster GUIRenderer=new Render2DMaster(loader,GlobalDataManager.shader2D);
-	
 	RenderTextMaster rendertextMaster =new RenderTextMaster(loader,GlobalDataManager.fontRenderer);
 	
 	//현재 그럴듯한 하드코딩으로 dynamic text에대해 자원관리.. 그냥루프마다 String에대한 vao,vbo할당하고 draw하고 할당해제
@@ -63,16 +69,26 @@ public class IngameScene extends Scene{
 	
 	int _tileLoadingIdx=0;
 	
+	
+	//
+	EntityTimer cautionTimer=new EntityTimer(7.0f);
+	EntityTimer missileItemGenTimer=new EntityTimer(3.0f);
+	int[] tileIdx=new int[6];
+	
+	
+	
+	
 	public IngameScene()
 	{
 		ScoreSystem.initialize();
+		GlobalMissileManager.initialize();
 		
 		//YechanTestEntity entity = new YechanTestEntity(texture,new Transform(new Vector2f(150,150),0,new Vector2f(10,10)));
 		loadTiles();
 		loadGameObjects();
 		loadGuis();
 		
-	
+		cautionTimer.start();
 	}
 	
 	
@@ -82,6 +98,7 @@ public class IngameScene extends Scene{
 		systemTimer.update();
 		player1RebirthTimer.update();
 		player2RebirthTimer.update();
+		updateDynamicGuiText();
 		
 		switch(systemTimer.getStatus())
 		{
@@ -100,7 +117,7 @@ public class IngameScene extends Scene{
 	public void loadGuis() {
 		scoreText=new GUIText("0 : 0", 2.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0), 1.0f, true);
 		scoreText.setColour(1, 1, 1);
-		rendertextMaster.loadText(scoreText);
+		//rendertextMaster.loadText(scoreText);
 		
 		/*버튼로드 이벤트 매니저 생성해서 관리해야할것같다..*/
 		EntityTexture downedButton=new EntityTexture(loader.loadTexture("images/redButton"));
@@ -116,10 +133,7 @@ public class IngameScene extends Scene{
 	public void updateDynamicGuiText() {
 		
 		//화면잘돌아가나 실험하는코드 무시..
-		float floatTime=systemTimer.getRemainGameTime();
-		if(curTime ==(int)floatTime) {
-			return;
-		}
+		int floatTime=(int)systemTimer.getRemainGameTime();
 		
 		
 		curTime=(int)floatTime;
@@ -128,14 +142,33 @@ public class IngameScene extends Scene{
 		renderDynamicTextMaster.cleanUpList();
 		
 		/**/
-		System.out.print(curTime);
-		String remainGameTimeStr=String.valueOf(curTime);
-		countdownText=new GUIText(remainGameTimeStr, 5.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0.3f), 1.0f, true);
-		Random random=new Random();
-		countdownText.setCustomizing(new Vector3f(random.nextFloat(),random.nextFloat(),random.nextFloat()),
-				new Vector3f(random.nextFloat(),random.nextFloat(),random.nextFloat()),
-				0.5f, 0.2f, 0.5f, 0.3f,new Vector2f(0.006f,0.0006f));
-		renderDynamicTextMaster.loadText(countdownText);
+		
+		//시작 카운트다운 상태일 때.
+		if(systemTimer.getCurrentCountDown()>0)
+		{
+			
+			countdownText=new GUIText(systemTimer.getCurrentCountDown()+"", 5.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0.3f), 1.0f, true);
+			Random random=new Random();
+			countdownText.setColour(new Vector3f(1.0f, 0.0f, 1.0f));
+			renderDynamicTextMaster.loadText(countdownText);
+		}
+		else //게임시간 차감 상태일 때.
+		{
+			//render countdown
+			//System.out.print(curTime);
+			int minutes=floatTime/60;
+			String strMinutes="0"+minutes;
+			int seconds=floatTime%60;
+			String strSec=(seconds<10)? "0"+seconds : seconds+"";
+			
+			countdownText=new GUIText(strMinutes+" : "+strSec, 5.0F, GlobalDataManager.defaultFontType , new Vector2f(0,0.3f), 1.0f, true);
+			Random random=new Random();
+			countdownText.setColour(new Vector3f(0.0f, 0.0f, 1.0f));
+			renderDynamicTextMaster.loadText(countdownText);
+		}
+		
+		scoreText.setText(ScoreSystem.getScore(1)+" : "+ScoreSystem.getScore(2));
+		renderDynamicTextMaster.loadText(scoreText);
 	}
 	
 	private void updateIngame()
@@ -145,13 +178,26 @@ public class IngameScene extends Scene{
 		player1.update();
 		player2.update();
 		ball.update();
-		updateDynamicGuiText();
 		quitButton.update(GlobalDataManager.mousePicking);
+		updateMissileItemTimeSystem();
 		
 		
-		for(Missile missile : missiles)
+		for(Missile missile : GlobalMissileManager.getMissileList())
 		{
 			missile.update();
+		}
+		
+		Iterator<MissileItem> iter=GlobalMissileManager.getMissileItems().iterator();
+		
+		while(iter.hasNext())
+		{
+			MissileItem item=iter.next();
+			item.update();
+			
+			if(item.isLifeOver())
+			{
+				iter.remove();
+			}
 		}
 		
 		for(Tile tile : tiles)
@@ -159,8 +205,59 @@ public class IngameScene extends Scene{
 			tile.update();
 		}
 		
-		CollisionManager.ProcessCollision(player1, missiles, ball);
-		CollisionManager.ProcessCollision(player2, missiles, ball);
+		CollisionManager.ProcessCollision(player1, GlobalMissileManager.getMissileList(), deadSpaces, ball);
+		CollisionManager.ProcessCollision(player2, GlobalMissileManager.getMissileList(), deadSpaces, ball);
+		
+		Iterator<MissileItem> itemIter=GlobalMissileManager.getMissileItems().iterator();
+		
+		//check collision with missileItem
+		if(player1.getStatus()!=CharacterStatus.DEAD)
+		while(itemIter.hasNext())
+		{
+			MissileItem item=itemIter.next();
+			if(CollisionManager.CollisionDetected(player1, item))
+			{
+				itemIter.remove();
+				player1.addMissileInQueue(item.getMissileType());
+			}
+		}
+		
+		itemIter=GlobalMissileManager.getMissileItems().iterator();
+		//check collision with missileItem
+		if(player2.getStatus()!=CharacterStatus.DEAD)
+		while(itemIter.hasNext())
+		{
+			MissileItem item=itemIter.next();
+			
+			if(CollisionManager.CollisionDetected(player2, item))
+			{
+				itemIter.remove();
+				player2.addMissileInQueue(item.getMissileType());
+			}
+		}
+		
+		//update deadSpaces
+		for(DeadSpace space : deadSpaces)
+		{
+			space.update();
+			
+			//check collision with deadSpace
+			if(player1.getStatus()!=CharacterStatus.DEAD)
+			{
+				if(CollisionManager.CollisionDetected(player1, space))
+				{
+					if(ball.getCatchingPlayerIdx()==1)
+					{
+						
+					}
+				}
+			}
+				
+			if(player2.getStatus()!=CharacterStatus.DEAD)
+			{
+				
+			}
+		}
 		
 		
 		processScore();
@@ -174,8 +271,120 @@ public class IngameScene extends Scene{
 	
 	public void cleanUp()
 	{
-		missiles.clear();
 		
+	}
+	
+	public void updateMissileItemTimeSystem()
+	{
+		cautionTimer.update();
+		missileItemGenTimer.update();
+		
+		if(cautionTimer.isEventOn())
+		{
+			generateCautionMarks();
+			missileItemGenTimer.start();
+			cautionTimer.stop();
+			deadSpaces.clear();
+			
+			return;
+		}
+		
+		if(missileItemGenTimer.isEventOn())
+		{
+			cautionTimer.start();
+			missileItemGenTimer.stop();
+			
+			cautionMarks.clear();
+			generateItems();
+			generateDeadSpace();
+			
+		}
+	}
+	
+	public void generateItems()
+	{
+		Random rand=new Random();
+		for(int i=0; i<3; i++)
+		{
+			int idx=tileIdx[i];
+			Vector2f position=new Vector2f(tiles[idx].getTransform().getPosition());
+			MissileType type=null;
+			
+			//select type by random value
+			int type_idx=rand.nextInt(3);
+			
+			switch(type_idx)
+			{
+			case 0:
+				type=MissileType.SEPARATE;
+				break;
+			case 1:
+				type=MissileType.SLOW;
+				break;
+			case 2:
+				type=MissileType.STUN;
+				break;
+			}
+			
+			GlobalMissileManager.Instantiate(new MissileItem(position, type));
+		}
+		
+	}
+	
+	public void generateDeadSpace()
+	{
+		for(int i=3; i<6; i++)
+		{
+			int idx=tileIdx[i];
+			Vector2f position=new Vector2f(tiles[idx].getTransform().getPosition());
+			
+			deadSpaces.add(new DeadSpace(position));
+		}
+	}
+	
+	public void generateCautionMarks()
+	{
+		//처음 0~2번은 item tile, 다음 3~5번 타일은 함정 타일
+		//tileIdx
+		
+		Random random=new Random();
+		
+		for(int i=0; i<6; i++)
+		{
+			
+			boolean repetition=true;
+			
+			while(repetition)
+			{
+			int tmp=random.nextInt(15)+1;
+			if(i==0)
+			{
+				repetition=false;
+				tileIdx[i]=tmp;
+			}
+			
+			for(int j=0; j<i; j++)
+			{
+				if(tmp==tileIdx[j])
+				{
+					repetition=true;
+					break;
+				}
+				
+				if(j==i-1)
+				{
+					repetition=false;
+					tileIdx[i]=tmp;
+				}
+			}
+			
+			}
+		}
+		
+		for(int i=0; i<6; i++)
+		{
+			cautionMarks.add(new CautionMark(new Vector2f(tiles[tileIdx[i]].getTransform().getPosition())));
+		}
 	}
 	
 	public void render()
@@ -188,12 +397,6 @@ public class IngameScene extends Scene{
 		rendertextMaster.render();
 		renderDynamicTextMaster.render();
 		GUIRenderer.render();
-		
-		if(systemTimer.getCurrentCountDown()>0)
-		{
-			//render countdown
-			
-		}
 		
 		// if player 1 die
 		// render rebirth countdown
@@ -213,6 +416,27 @@ public class IngameScene extends Scene{
 		entityRenderer.processInstancingEntity(player2);
 		entityRenderer.processInstancingEntity(ball);
 		GUIRenderer.processInstancingEntity(quitButton);
+		
+		
+		for(MissileItem item : GlobalMissileManager.getMissileItems())
+		{
+			entityRenderer.processInstancingEntity(item);
+		}
+		
+		for(Missile missile : GlobalMissileManager.getMissileList())
+		{
+			entityRenderer.processInstancingEntity(missile);
+		}
+		
+		for(CautionMark mark : cautionMarks)
+		{
+			entityRenderer.processInstancingEntity(mark);
+		}
+		
+		for(DeadSpace deadSpace : deadSpaces)
+		{
+			entityRenderer.processInstancingEntity(deadSpace);
+		}
 	}
 	
 	private void loadGameObjects()
@@ -350,6 +574,9 @@ public class IngameScene extends Scene{
 						//시작 타일을 제외하고 마크를 해제한다.
 						if(i!=catchStartIdx)
 						tiles[i].setMarked(false);
+						
+						//스코어 텍스트를 업데이트 한다.
+						scoreText.setText(ScoreSystem.getScore(1)+" : "+ScoreSystem.getScore(2));
 					}
 				}
 				

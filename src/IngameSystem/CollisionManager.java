@@ -6,6 +6,8 @@ import org.lwjgl.util.Rectangle;
 import org.lwjgl.util.vector.Vector2f;
 
 import Entities.Ball;
+import Entities.CharacterStatus;
+import Entities.DeadSpace;
 import Entities.Entity;
 import Entities.Missile;
 import Entities.Player;
@@ -43,32 +45,39 @@ public class CollisionManager {
 		return isIntersect;		
 	}
 	
-	//플레이어와 미사일과 볼의 충돌 상태를 점검 및 업데이트한다.
-	public static void ProcessCollision(Player player, ArrayList<Missile> missiles, Ball ball)
+	//플레이어가 ball을 놓치게 한다.
+	private static void missTheBall(Ball ball, Player player)
 	{
+		Vector2f velocity=new Vector2f(player.getVelocity());
+		float velocityScale=player.getVelocity().length();
+		velocity.normalise();
+		
+		//볼을 놓치게 처리하고
+		ball.setCatchingPlayerIdx(-1);
+		
+		//플레이어가 이동중이었던 방향으로 볼이 움직이게 처리한다.
+		ball.setVelocityScale(velocityScale);
+		ball.setVelocityDirection(velocity);
+	}
+	
+	//플레이어와 미사일과 볼의 충돌 상태를 점검 및 업데이트한다.
+	public static void ProcessCollision(Player player, ArrayList<Missile> missiles, ArrayList<DeadSpace> deadSpaces, Ball ball)
+	{
+		//System.out.println(player.getStatus());
 		if(player.getStatus()==Entities.CharacterStatus.DEAD)
 			return;
 		
 		//바깥으로 나가면 죽는다.
 		if(isOutsideOfBoundary(player))
 		{
-			Vector2f velocity=new Vector2f(player.getVelocity());
-			float velocityScale=player.getVelocity().length();
-			velocity.normalise();
-			
-			player.Die();
 			
 			//플레이어가 볼을 가지고 있었다면
 			if(player.getPlayerIndex()==ball.getCatchingPlayerIdx())
 			{
-				//볼을 놓치게 처리하고
-				ball.setCatchingPlayerIdx(-1);
-				
-				//플레이어가 이동중이었던 방향으로 볼이 움직이게 처리한다.
-				ball.setVelocityScale(velocityScale);
-				ball.setVelocityDirection(velocity);
+				missTheBall(ball, player);
 			}
 			
+			player.Die();	
 			
 			return;
 		}
@@ -78,9 +87,43 @@ public class CollisionManager {
 		{
 			if(CollisionDetected(missile, player))
 			{
-				//미사일의 타입에 따른 처리를 한다.
+				//플레이어가 볼을 가지고 있었다면
+				if(ball.getCatchingPlayerIdx()==player.getPlayerIndex())
+				{
+					collidingMissile(player, missile, ball);
+					missTheBall(ball, player);
+				}
+				
+				missiles.remove(missile);
+				
+				//generate particle
+			}
+			
+			if(isOutsideOfBoundary(missile))
+			{
+				
+				missiles.remove(missile);
+				
+				//generate particle
 			}
 		}
+		
+		for(DeadSpace space : deadSpaces)
+		{
+			if(!space.isDeadStatus()) return;
+			
+			if(CollisionDetected(player, space))
+			{
+				if(player.getPlayerIndex()==ball.getCatchingPlayerIdx())
+				{
+					missTheBall(ball, player);
+				}
+				
+				player.Die();
+			}
+		}
+		
+		
 		
 		if(player.getStatus()==Entities.CharacterStatus.STUN)
 		{
@@ -91,8 +134,8 @@ public class CollisionManager {
 		//ball이 소유중이 아닐 때
 		if(ball.getCatchingPlayerIdx()==-1)
 		{
-			//ball과 플레이어가 닿았다면
-			if(CollisionDetected(player, ball))
+			//ball과 플레이어가 닿았다면 //플레이어가 LIVE 상태이면
+			if(CollisionDetected(player, ball) && player.getStatus()==CharacterStatus.LIVE)
 			{
 				//해당 플레이어의 소유로 변경한다.
 				ball.setCatchingPlayerIdx(player.getPlayerIndex());
@@ -204,5 +247,30 @@ public class CollisionManager {
 	  
 	  
 	  
+	}
+	
+	private static void collidingMissile(Player player, Missile missile, Ball ball)
+	{
+		switch(missile.getType())
+		{
+		case SEPARATE:
+			player.Separate(missile);
+			
+			float angle=(float)Math.atan(missile.getVelocityDirection().y/missile.getVelocityDirection().x);
+			angle+=Math.toRadians(45.0f);
+			
+			float ball_dir_x=(float)Math.cos(angle);
+			float ball_dir_y=(float)Math.sin(angle);
+			Vector2f ballDir=new Vector2f(ball_dir_x, ball_dir_y);
+			ball.setVelocityDirection(ballDir);
+			
+			break;
+		case STUN:
+			player.Stun();
+			break;
+		case SLOW:
+			player.Slow();
+			break;
+		}
 	}
 }

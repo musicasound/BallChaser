@@ -49,8 +49,8 @@ public class GuiButton extends Entity{
 	
 	public void updatePicking(MousePicking mousePicking) {
 		Vector2f worldMousePos = mousePicking.getCurrentMousePos();
-		System.out.println(_CollisionRange);
-		System.out.println(worldMousePos);
+		//System.out.println(_CollisionRange);
+		//System.out.println(worldMousePos);
 		if(_CollisionRange.contains((int)worldMousePos.x,(int)worldMousePos.y)) {
 			updatePickingEvent();
 		}

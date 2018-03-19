@@ -25,8 +25,17 @@ public class GlobalDataManager {
 	public static EntityTexture speedyCharTexture;
 	public static EntityTexture powerfulCharTexture;
 	public static EntityTexture ballTexture;
+	public static EntityTexture cautionMarkTexture;
+	public static EntityTexture missileItemTexture;
+	public static EntityTexture separationMissileTexture;
+	public static EntityTexture stunMissileTexture;
+	public static EntityTexture slowMissileTexture;
+	public static EntityTexture deadSpaceTexture;
+	public static EntityTexture deadSpaceNoDeadTexture;
 	public static final float TILE_SCALE=120.0f;
 	public static final int TILES_COUNT=16;
+	public static final float CAUTION_MARK_LIFETIME=5.0f;
+	public static final float STUN_TOTAL_TIME=4.0f;
 	
 	public static MousePicking mousePicking;
 	
@@ -56,28 +65,23 @@ public class GlobalDataManager {
 	
 	public static void init(Loader loader)
 	{
-		nonmark_tileTexture=new EntityTexture(loader.loadTexture("images/tile"));
-		mark_tileTexture=new EntityTexture(loader.loadTexture("images/tile_mark"));
-		speedyCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
-		powerfulCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
-		ballTexture=new EntityTexture(loader.loadTexture("images/ball"));
+		loadTextures(loader);
+		loadCharacters();
+		setDefaultKeySettings();
 		
 		mousePicking=new MousePicking();
 		
-		speedyCharacter=new CharacterType(210.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), speedyCharTexture, 10.0f, 3.0f, 90.0f);
-		powerfulCharacter=new CharacterType(180.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), powerfulCharTexture, 10.0f, 3.0f, 90.0f);
 		
 		defaultFontType=new FontType(loader.loadFontTextureAtlas("candara"), new File("res/candara.fnt"));
 		
-		keySettings.add(new HashMap<>());
-		keySettings.add(new HashMap<KeySystem.CharacterKeySetting, Integer>());
-		keySettings.add(new HashMap<KeySystem.CharacterKeySetting, Integer>());
-		
-		setDefaultKeySettings();
 	}
 	
 	private static void setDefaultKeySettings()
 	{
+		keySettings.add(new HashMap<>());
+		keySettings.add(new HashMap<KeySystem.CharacterKeySetting, Integer>());
+		keySettings.add(new HashMap<KeySystem.CharacterKeySetting, Integer>());
+		
 		HashMap<KeySystem.CharacterKeySetting, Integer> player1Settings=keySettings.get(1);
 		HashMap<KeySystem.CharacterKeySetting, Integer> player2Settings=keySettings.get(2);
 		
@@ -93,6 +97,30 @@ public class GlobalDataManager {
 		player2Settings.put(KeySystem.CharacterKeySetting.CCW_ROT, Keyboard.KEY_A);
 		player2Settings.put(KeySystem.CharacterKeySetting.MISSILE_SHOT, Keyboard.KEY_SPACE);
 	
+	}
+	
+	private static void loadTextures(Loader loader)
+	{
+		nonmark_tileTexture=new EntityTexture(loader.loadTexture("images/tile"));
+		mark_tileTexture=new EntityTexture(loader.loadTexture("images/tile_mark"));
+		speedyCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
+		powerfulCharTexture=new EntityTexture(loader.loadTexture("images/arrow"));
+		ballTexture=new EntityTexture(loader.loadTexture("images/ball"));
+		missileItemTexture=new EntityTexture(loader.loadTexture("images/missileItem"));
+		separationMissileTexture=new EntityTexture(loader.loadTexture("images/separateMissile"));
+		stunMissileTexture=new EntityTexture(loader.loadTexture("images/stunMissile"));
+		slowMissileTexture=new EntityTexture(loader.loadTexture("images/slowMissile"));
+		cautionMarkTexture=new EntityTexture(loader.loadTexture("images/cautionMark"));
+		deadSpaceTexture=new EntityTexture(loader.loadTexture("images/deadspace"));
+		deadSpaceNoDeadTexture=new EntityTexture(loader.loadTexture("images/yellowsquare"));
+	}
+	
+	private static void loadCharacters()
+	{
+		
+		speedyCharacter=new CharacterType(210.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), speedyCharTexture, 10.0f, 3.0f, 90.0f);
+		powerfulCharacter=new CharacterType(180.0f, 1800.0f, 50.0f, new Vector2f(50,50), new Rectangle(0,0, 50, 50), powerfulCharTexture, 10.0f, 3.0f, 90.0f);
+		
 	}
 	
 	public static HashMap<KeySystem.CharacterKeySetting, Integer> getKeySettings(int playerIdx)

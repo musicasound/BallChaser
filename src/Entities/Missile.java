@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector2f;
 
 import DataTypes.MissileType;
 import Displays.DisplayManager;
+import IngameSystem.GlobalDataManager;
 import Physics.Transform;
 import Textures.EntityTexture;
 
@@ -17,20 +18,21 @@ public class Missile extends Entity {
 	Vector2f velocityDirection;
 	int targetPlayerIndex;
 	Rectangle _CollisionRange;
+	float velocity=180.0f;
 	
 	public Missile(MissileType type, Vector2f position, Vector2f moveDirection, int targetPlayerIdx 
 			) {
-		super(new Transform(position, 0.0f,type._ImageScale));
+		super(position, new Vector2f(50.0f, 50.0f));
 		this.type=type;
 		this.velocityDirection=moveDirection;
 		this.targetPlayerIndex=targetPlayerIdx;
-		this._CollisionRange=new Rectangle(0,0, 25,25);
+		this._CollisionRange=new Rectangle(0,0, 50,50);
 	}
 	
 	public void update()
 	{
-		transform.translate(type._MaxVelocity*velocityDirection.x*DisplayManager.fixedDeltaTime(),
-										type._MaxVelocity*velocityDirection.y*DisplayManager.fixedDeltaTime());
+		transform.translate(velocity*velocityDirection.x*DisplayManager.fixedDeltaTime(),
+										velocity*velocityDirection.y*DisplayManager.fixedDeltaTime());
 		
 	}
 
@@ -66,7 +68,17 @@ public class Missile extends Entity {
 	@Override
 	public EntityTexture getEntityTexture() {
 		// TODO Auto-generated method stub
-		return type._ImageTexture;
+		switch(type)
+		{
+		case SEPARATE:
+			return GlobalDataManager.separationMissileTexture;
+		case STUN:
+			return GlobalDataManager.stunMissileTexture;
+		case SLOW:
+			return GlobalDataManager.slowMissileTexture;
+		default:
+			return null;
+		}
 	}
 
 

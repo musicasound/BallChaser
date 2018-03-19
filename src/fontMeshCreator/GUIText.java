@@ -152,6 +152,15 @@ public class GUIText {
 		
 	}
 
+	public void setText(String text)
+	{
+		this.textString=text;
+	}
+	
+	public String getText()
+	{
+		return textString;
+	}
 	
 	/**
 	 * @return The font used by this text.

@@ -11,7 +11,7 @@ public class GameSystemTimer {
 	public static final float TOTAL_GAMETIME=180.0f;
 	
 	private float currentTime=0.0f;
-	private float countdown_remainTime=5.0f;
+	private float countdown_remainTime=5.8f;
 	private SysTimerStatus status;
 	
 	
@@ -59,6 +59,6 @@ public class GameSystemTimer {
 	
 	public int getCurrentCountDown()
 	{
-		return (int)Math.ceil(countdown_remainTime);
+		return (int)Math.floor(countdown_remainTime);
 	}
 }

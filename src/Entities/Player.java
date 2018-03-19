@@ -220,10 +220,10 @@ public class Player extends Entity {
 						missileItemQueue.remove(0);
 						
 						float angle=(float)Math.toRadians(transform.getRotationAngle());
-						velocityDirection=new Vector2f((float)Math.sin(-angle),(float) Math.cos(-angle));
+						Vector2f missileDirection=new Vector2f((float)Math.sin(-angle),(float) Math.cos(-angle));
 						int targetPlayerIdx= (playerIndex==1? 2 : 1);
 						
-						GlobalMissileManager.Instantiate(new Missile(type, new Vector2f(transform.getPosition()), velocityDirection, targetPlayerIdx));
+						GlobalMissileManager.Instantiate(new Missile(type, new Vector2f(transform.getPosition().x, transform.getPosition().y), missileDirection, targetPlayerIdx));
 					}
 					
 					//set timer

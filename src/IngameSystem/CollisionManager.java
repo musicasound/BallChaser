@@ -89,6 +89,7 @@ public class CollisionManager {
 		{
 			Missile missile=missileIter.next();
 			
+			if(missile.getTargetPlayerIndex()==player.getPlayerIndex())
 			if(CollisionDetected(missile, player))
 			{
 				//플레이어가 볼을 가지고 있었다면

@@ -75,9 +75,6 @@ public class IngameScene extends Scene{
 	EntityTimer missileItemGenTimer=new EntityTimer(3.0f);
 	int[] tileIdx=new int[6];
 	
-	
-	
-	
 	public IngameScene()
 	{
 		ScoreSystem.initialize();
@@ -412,6 +409,11 @@ public class IngameScene extends Scene{
 			tileRenderer.processInstancingEntity(tiles[i]);
 		}
 		
+		for(CautionMark mark : cautionMarks)
+		{
+			entityRenderer.processInstancingEntity(mark);
+		}
+		
 		entityRenderer.processInstancingEntity(player1);
 		entityRenderer.processInstancingEntity(player2);
 		entityRenderer.processInstancingEntity(ball);
@@ -423,20 +425,16 @@ public class IngameScene extends Scene{
 			entityRenderer.processInstancingEntity(item);
 		}
 		
+		for(DeadSpace deadSpace : deadSpaces)
+		{
+			entityRenderer.processInstancingEntity(deadSpace);
+		}
+		
 		for(Missile missile : GlobalMissileManager.getMissileList())
 		{
 			entityRenderer.processInstancingEntity(missile);
 		}
 		
-		for(CautionMark mark : cautionMarks)
-		{
-			entityRenderer.processInstancingEntity(mark);
-		}
-		
-		for(DeadSpace deadSpace : deadSpaces)
-		{
-			entityRenderer.processInstancingEntity(deadSpace);
-		}
 	}
 	
 	private void loadGameObjects()
